@@ -30,7 +30,11 @@ const commands = [
                 .setName("course")
                 .setDescription("Course index")
                 .setRequired(true)
-        )
+        ),
+    
+    new SlashCommandBuilder()
+        .setName("check")
+        .setDescription("List all courses you are currently watching"),
 ];
 
 const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
@@ -44,7 +48,7 @@ async function registerCommands() {
     console.log('commands registered');
 }
 
-function startBot(courseMap) {
+function startBot(courseUserMap) {
     client.on("clientReady", () => {
         console.log("Bot is Ready!");
         console.log(`Tag: ${client.user.tag}`);
@@ -55,32 +59,44 @@ function startBot(courseMap) {
         if(!interaction.isChatInputCommand())
             return;
 
-        if(interaction.commandName === "watch") {
+        const commandName = interaction.commandName, userID = interaction.user.id;
+
+        if(commandName === "watch") {
             const course = interaction.options.getString("course");
-            if(courseMap.get(course) === undefined) {
-                courseMap.set(course, [interaction.user.id]);
+            if(courseUserMap.get(course) === undefined) {
+                courseUserMap.set(course, [userID]);
             }
             else {
-                courseMap.get(course).push(interaction.user_id);
+                courseUserMap.get(course).push(userID);
             }
 
             await interaction.reply(`Watching ${course} index`);
         }
-        else if(interaction.commandName === "unwatch") {
+        else if(commandName === "unwatch") {
             const course = interaction.options.getString("course");
-            if(courseMap.get(course) === undefined || !courseMap.get(course).includes(interaction.user.id)) {
+            if(courseUserMap.get(course) === undefined || !courseUserMap.get(course).includes(userID)) {
                 await interaction.reply(`Not currently watching this course`);
             }
             else {
-                courseMap.set(course, courseMap.get(course).filter((userId) => userId !== interaction.user.id));
+                courseUserMap.set(course, courseUserMap.get(course).filter((id) => id !== userID));
             }
 
             await interaction.reply(`Stopped watching ${course} index`);
         }
+        else if(commandName === "check") {
+            let coursesBeingWatched = [];
+            for(let [courseIndex, userIds] of courseUserMap) {
+                if(userIds.includes(userID)) {
+                    coursesBeingWatched.push(courseIndex);
+                }
+            }
+
+            await interaction.reply(coursesBeingWatched.join(" "));
+        }
     });
 
     registerCommands();
-    client.login(process.env.BOT_TOKEN);
+    client.login(BOT_TOKEN);
 }
 
 

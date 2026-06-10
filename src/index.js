@@ -1,9 +1,10 @@
-import { fetchCourses } from "./fetchCourses.js";
+import { fetchCourses, getCourseInfo } from "./fetchCourses.js";
 import { startBot, client } from "./bot.js";
 
 const FETCH_INTERVAL = 5000;
 
-const courseMap = new Map();
+const courseUserMap = new Map();
+const courseInfoMap = await getCourseInfo();
 
 process.on("SIGINT", async () => {
     console.log("Shutting down bot");
@@ -11,23 +12,19 @@ process.on("SIGINT", async () => {
     process.exit(0);
 });
 
-startBot(courseMap);
+startBot(courseUserMap);
 
 setInterval( async () => {
     const openCourses = await fetchCourses();
-    for(let [course, userIds] of courseMap) {
-        if(openCourses.includes(course)) {        
-            let toRemove = [];
+    for(let [courseIndex, userIds] of courseUserMap) {
+        if(openCourses.includes(courseIndex)) {        
 
             for(const userId of userIds) {
                 const user = await client.users.fetch(userId);
-                await user.send(`${course} is now open!`);
-
-                toRemove.push(userId);
+                await user.send(`${courseIndex} is now open!\nCourse Title: ${courseInfoMap.get(courseIndex)}`);
             }
 
-            courseMap.set(course, userIds.filter(userId => !toRemove.includes(userId)));
-        }
-
+            courseUserMap.set(courseIndex, []);
+        }   
     }
 }, FETCH_INTERVAL);
