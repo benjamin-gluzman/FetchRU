@@ -1,4 +1,5 @@
-import { Client, Events, GatewayIntentBits, SlashCommandBuilder, REST, Routes } from 'discord.js';
+import { Client, Events, GatewayIntentBits, SlashCommandBuilder, MessageFlags, REST, Routes } from "discord.js";
+import { createWatchComponents, createUnwatchComponents, createCheckComponents } from "./components.js"
 import dotenv from 'dotenv';
 
 dotenv.config({ path: "./.env" });
@@ -54,7 +55,7 @@ function startBot(courseUserMap) {
         console.log(`Tag: ${client.user.tag}`);
     });
 
-
+    // handles slash commands
     client.on("interactionCreate", async (interaction) => {
         if(!interaction.isChatInputCommand())
             return;
@@ -62,26 +63,33 @@ function startBot(courseUserMap) {
         const commandName = interaction.commandName, userID = interaction.user.id;
 
         if(commandName === "watch") {
-            const course = interaction.options.getString("course");
-            if(courseUserMap.get(course) === undefined) {
-                courseUserMap.set(course, [userID]);
+            const courseIndex = interaction.options.getString("course");
+            if(courseUserMap.get(courseIndex) === undefined) {
+                courseUserMap.set(courseIndex, [userID]);
             }
             else {
-                courseUserMap.get(course).push(userID);
+                courseUserMap.get(courseIndex).push(userID);
             }
 
-            await interaction.reply(`Watching ${course} index`);
+
+            await interaction.reply({
+                components: createWatchComponents(courseIndex),
+                flags: MessageFlags.IsComponentsV2
+            });
         }
         else if(commandName === "unwatch") {
-            const course = interaction.options.getString("course");
-            if(courseUserMap.get(course) === undefined || !courseUserMap.get(course).includes(userID)) {
+            const courseIndex = interaction.options.getString("course");
+            if(courseUserMap.get(courseIndex) === undefined || !courseUserMap.get(courseIndex).includes(userID)) {
                 await interaction.reply(`Not currently watching this course`);
             }
             else {
-                courseUserMap.set(course, courseUserMap.get(course).filter((id) => id !== userID));
+                courseUserMap.set(courseIndex, courseUserMap.get(courseIndex).filter((id) => id !== userID));
             }
 
-            await interaction.reply(`Stopped watching ${course} index`);
+            await interaction.reply({
+                components: createUnwatchComponents(courseIndex),
+                flags: MessageFlags.IsComponentsV2
+            });
         }
         else if(commandName === "check") {
             let coursesBeingWatched = [];
@@ -95,9 +103,19 @@ function startBot(courseUserMap) {
         }
     });
 
+    // handles component interactions
+    client.on("interactionCreate", async (interaction) => {
+        if(!interaction.isButton()) return;
+
+
+    })
+
+
     registerCommands();
     client.login(BOT_TOKEN);
 }
+
+
 
 
 export {startBot, client};
