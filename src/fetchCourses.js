@@ -1,5 +1,11 @@
-const OPEN_COURSES_URL = "https://classes.rutgers.edu/soc/api/openSections.json?year=2026&term=1&campus=NB";
-const COURSE_INFO_URL = "https://classes.rutgers.edu/soc/api/courses.json?year=2026&term=1&campus=NB";
+const TERMS = {
+    SPRING: 1,
+    SUMMER: 7,
+    FALL: 9
+}
+
+const OPEN_COURSES_URL = `https://classes.rutgers.edu/soc/api/openSections.json?year=2026&term=${TERMS.FALL}&campus=NB`;
+const COURSE_INFO_URL = `https://classes.rutgers.edu/soc/api/courses.json?year=2026&term=${TERMS.FALL}&campus=NB`;
 
 async function fetchCourses() {
     const response = await fetch(OPEN_COURSES_URL);
@@ -8,7 +14,11 @@ async function fetchCourses() {
         // process.exit(0);
     }
 
-    const openCourses = await response.json();
+    let openCourses = await response.json();
+    // openCourses = openCourses.map((course) => parseInt(course));
+
+    // sort openCourses
+
     return openCourses;
 }
 

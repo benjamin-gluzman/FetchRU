@@ -1,10 +1,11 @@
 import { fetchCourses, getCourseInfo } from "./fetchCourses.js";
 import { startBot, client } from "./bot.js";
+import * as database from "./database.js"
 
 const FETCH_INTERVAL = 5000;
 
-const courseUserMap = new Map();
-const courseInfoMap = await getCourseInfo();
+
+// const courseInfoMap = await getCourseInfo();
 
 process.on("SIGINT", async () => {
     console.log("Shutting down bot");
@@ -12,19 +13,22 @@ process.on("SIGINT", async () => {
     process.exit(0);
 });
 
-startBot(courseUserMap);
+startBot(database);
 
 setInterval( async () => {
     const openCourses = await fetchCourses();
-    for(let [courseIndex, userIds] of courseUserMap) {
-        if(openCourses.includes(courseIndex)) {        
 
-            for(const userId of userIds) {
-                const user = await client.users.fetch(userId);
-                await user.send(`${courseIndex} is now open!\nCourse Title: ${courseInfoMap.get(courseIndex)}`);
-            }
+    for(const course_index of openCourses) {
+        const user_ids = database.getUsers(course_index);
 
-            courseUserMap.set(courseIndex, []);
-        }   
+        for(const user_id of user_ids) {
+            const user = await client.users.fetch(user_id);
+            
+            await user.send(`${course_index} is now open!`);
+
+            database.removeWatch(user_id, course_index);
+        }
     }
+
 }, FETCH_INTERVAL);
+

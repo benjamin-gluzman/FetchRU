@@ -49,7 +49,7 @@ async function registerCommands() {
     console.log('commands registered');
 }
 
-function startBot(courseUserMap) {
+function startBot(database) {
     client.on("clientReady", () => {
         console.log("Bot is Ready!");
         console.log(`Tag: ${client.user.tag}`);
@@ -60,46 +60,35 @@ function startBot(courseUserMap) {
         if(!interaction.isChatInputCommand())
             return;
 
-        const commandName = interaction.commandName, userID = interaction.user.id;
+        const commandName = interaction.commandName, user_id = interaction.user.id;
 
         if(commandName === "watch") {
-            const courseIndex = interaction.options.getString("course");
-            if(courseUserMap.get(courseIndex) === undefined) {
-                courseUserMap.set(courseIndex, [userID]);
-            }
-            else {
-                courseUserMap.get(courseIndex).push(userID);
-            }
+            const course_index = interaction.options.getString("course");
+
+            database.addWatch(user_id, course_index);
 
 
             await interaction.reply({
-                components: createWatchComponents(courseIndex),
+                components: createWatchComponents(course_index),
                 flags: MessageFlags.IsComponentsV2
             });
         }
         else if(commandName === "unwatch") {
-            const courseIndex = interaction.options.getString("course");
-            if(courseUserMap.get(courseIndex) === undefined || !courseUserMap.get(courseIndex).includes(userID)) {
-                await interaction.reply(`Not currently watching this course`);
-            }
-            else {
-                courseUserMap.set(courseIndex, courseUserMap.get(courseIndex).filter((id) => id !== userID));
-            }
+            const course_index = interaction.options.getString("course");
+            
+            database.removeWatch(user_id, course_index);
 
             await interaction.reply({
-                components: createUnwatchComponents(courseIndex),
+                components: createUnwatchComponents(course_index),
                 flags: MessageFlags.IsComponentsV2
             });
         }
         else if(commandName === "check") {
-            let coursesBeingWatched = [];
-            for(let [courseIndex, userIds] of courseUserMap) {
-                if(userIds.includes(userID)) {
-                    coursesBeingWatched.push(courseIndex);
-                }
-            }
-
-            await interaction.reply(coursesBeingWatched.join(" "));
+            const watches = database.getWatches(user_id);
+            if(watches.length === 0)
+                await interaction.reply("Not currently watching any courses"); 
+            else 
+                await interaction.reply(watches.join(", "));
         }
     });
 
