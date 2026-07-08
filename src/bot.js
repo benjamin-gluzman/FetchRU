@@ -1,5 +1,6 @@
 import { Client, Events, GatewayIntentBits, SlashCommandBuilder, MessageFlags, REST, Routes } from "discord.js";
-import { createWatchComponents, createUnwatchComponents, createCheckComponents } from "./components.js"
+import { createWatchComponents, createUnwatchComponents, createCheckComponents } from "./components.js";
+import * as database from "./database.js";
 import dotenv from 'dotenv';
 
 dotenv.config({ path: "./.env" });
@@ -36,6 +37,10 @@ const commands = [
     new SlashCommandBuilder()
         .setName("check")
         .setDescription("List all courses you are currently watching"),
+
+    new SlashCommandBuilder()
+        .setName("clear")
+        .setDescription("Clear all courses you are currently watching")
 ];
 
 const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
@@ -49,50 +54,63 @@ async function registerCommands() {
     console.log('commands registered');
 }
 
-function startBot(database) {
+async function respond_to_watch(interaction) {
+    const course_index = interaction.options.getString("course");
+
+    database.addWatch(interaction.user.id, course_index);
+
+
+    await interaction.reply({
+        components: createWatchComponents(course_index),
+        flags: MessageFlags.IsComponentsV2
+    });
+}
+
+async function respond_to_unwatch(interaction) {
+    const course_index = interaction.options.getString("course");
+    
+    database.removeWatch(interaction.user.id, course_index);
+
+    await interaction.reply({
+        components: createUnwatchComponents(course_index),
+        flags: MessageFlags.IsComponentsV2
+    });
+}
+
+async function respond_to_check(interaction) {
+    const watches = database.getWatches(interaction.user.id);
+    if(watches.length === 0)
+        await interaction.reply("Not currently watching any courses"); 
+    else 
+        await interaction.reply(watches.join(", "));
+}
+
+async function respond_to_clear(interaction) {
+    database.clearWatches(interaction.user.id);
+
+    await interaction.reply("All courses being watched have been cleared");
+}
+
+function startBot() {
     client.on("clientReady", () => {
         console.log("Bot is Ready!");
         console.log(`Tag: ${client.user.tag}`);
     });
 
-    // handles slash commands
+    // Respond to slash commands
     client.on("interactionCreate", async (interaction) => {
         if(!interaction.isChatInputCommand())
             return;
 
-        const commandName = interaction.commandName, user_id = interaction.user.id;
+        const commandName = interaction.commandName;
 
-        if(commandName === "watch") {
-            const course_index = interaction.options.getString("course");
-
-            database.addWatch(user_id, course_index);
-
-
-            await interaction.reply({
-                components: createWatchComponents(course_index),
-                flags: MessageFlags.IsComponentsV2
-            });
-        }
-        else if(commandName === "unwatch") {
-            const course_index = interaction.options.getString("course");
-            
-            database.removeWatch(user_id, course_index);
-
-            await interaction.reply({
-                components: createUnwatchComponents(course_index),
-                flags: MessageFlags.IsComponentsV2
-            });
-        }
-        else if(commandName === "check") {
-            const watches = database.getWatches(user_id);
-            if(watches.length === 0)
-                await interaction.reply("Not currently watching any courses"); 
-            else 
-                await interaction.reply(watches.join(", "));
-        }
+        if(commandName === "watch")         respond_to_watch(interaction);
+        else if(commandName === "unwatch")  respond_to_unwatch(interaction);
+        else if(commandName === "check")    respond_to_check(interaction);
+        else if(commandName === "clear")    respond_to_clear(interaction);
     });
 
-    // handles component interactions
+    // Handles component interactions
     client.on("interactionCreate", async (interaction) => {
         if(!interaction.isButton()) return;
 

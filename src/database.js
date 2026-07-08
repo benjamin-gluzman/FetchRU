@@ -22,6 +22,11 @@ const _removeWatch = db.prepare(`
     WHERE user_id = ? AND course_index = ?
 `);
 
+const _clearWatches = db.prepare(`
+    DELETE FROM watches
+    WHERE user_id = ?
+`)
+
 const _getWatches = db.prepare(`
     SELECT course_index
     FROM watches
@@ -43,6 +48,10 @@ function removeWatch(user_id, course_index) {
     _removeWatch.run(user_id, course_index);
 }
 
+function clearWatches(user_id) {
+    _clearWatches.run(user_id);
+}
+
 function getWatches(user_id) {
     return _getWatches.all(user_id).map(row => row.course_index);
 }
@@ -52,4 +61,4 @@ function getUsers(course_index) {
 }
 
 
-export { addWatch, removeWatch, getWatches, getUsers };
+export { addWatch, removeWatch, getWatches, getUsers, clearWatches};

@@ -1,6 +1,6 @@
 import { fetchCourses, getCourseInfo } from "./fetchCourses.js";
 import { startBot, client } from "./bot.js";
-import * as database from "./database.js"
+import * as database from "./database.js";
 
 const FETCH_INTERVAL = 5000;
 
@@ -13,7 +13,7 @@ process.on("SIGINT", async () => {
     process.exit(0);
 });
 
-startBot(database);
+startBot();
 
 setInterval( async () => {
     const openCourses = await fetchCourses();
