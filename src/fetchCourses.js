@@ -7,17 +7,14 @@ const TERMS = {
 const OPEN_COURSES_URL = `https://classes.rutgers.edu/soc/api/openSections.json?year=2026&term=${TERMS.FALL}&campus=NB`;
 const COURSE_INFO_URL = `https://classes.rutgers.edu/soc/api/courses.json?year=2026&term=${TERMS.FALL}&campus=NB`;
 
-async function fetchCourses() {
+async function getOpenCourses() {
     const response = await fetch(OPEN_COURSES_URL);
     if(!response.ok) {
-        console.log("fetchCourses() fetch() failed");
-        // process.exit(0);
+        console.log("getOpenCourses() fetch() failed");
+        return;
     }
 
-    let openCourses = await response.json();
-    // openCourses = openCourses.map((course) => parseInt(course));
-
-    // sort openCourses
+    const openCourses = await response.json();
 
     return openCourses;
 }
@@ -26,24 +23,19 @@ async function getCourseInfo() {
     const response = await fetch(COURSE_INFO_URL);
     if(!response.ok) {
         console.log("getCourseInfo() fetch() failed");
+        return;
     }
 
     const courseInfo = await response.json();
-    const courseInfoMap = new Map();
 
-    for(const course of courseInfo) {
-        if(course.title === undefined) {
-            console.log("Course missing title");
-            continue;
-        }
-        const title = course.title;
-
-        for(const section of course.sections) {
-            courseInfoMap.set(section.index, title);
-        }
-    }
-
-    return courseInfoMap;
+    return courseInfo.map(course => ({
+            title: course.title,
+            courseString: course.courseString,
+            sections: course.sections.map(section => ({
+                index: section.index,
+                number: section.number
+            }))
+        }));
 }
 
-export {getCourseInfo, fetchCourses};
+export { getOpenCourses, getCourseInfo };

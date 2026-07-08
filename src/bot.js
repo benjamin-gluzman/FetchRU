@@ -1,6 +1,6 @@
 import { Client, Events, GatewayIntentBits, SlashCommandBuilder, MessageFlags, REST, Routes } from "discord.js";
 import { createWatchComponents, createUnwatchComponents, createCheckComponents } from "./components.js";
-import * as database from "./database.js";
+import { database } from "./database.js";
 import dotenv from 'dotenv';
 
 dotenv.config({ path: "./.env" });
@@ -11,7 +11,8 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent
-    ]});
+    ]
+});
 
 const commands = [
     new SlashCommandBuilder()
@@ -54,6 +55,7 @@ async function registerCommands() {
     console.log('commands registered');
 }
 
+
 async function respond_to_watch(interaction) {
     const course_index = interaction.options.getString("course");
 
@@ -79,10 +81,19 @@ async function respond_to_unwatch(interaction) {
 
 async function respond_to_check(interaction) {
     const watches = database.getWatches(interaction.user.id);
-    if(watches.length === 0)
-        await interaction.reply("Not currently watching any courses"); 
-    else 
-        await interaction.reply(watches.join(", "));
+    if(watches.length === 0) {
+        await interaction.reply("Not currently watching any courses");
+        return;
+    }
+
+    let response = "Watching: \n";
+    for(const course_index of watches) {
+        const info = database.getInfoByCourseIndex(course_index);
+
+        response += `Title: ${info.title}  Course: ${info.course_string}  Section: ${info.section} Index: ${course_index} \n`;
+    }
+    
+    await interaction.reply(response);
 }
 
 async function respond_to_clear(interaction) {

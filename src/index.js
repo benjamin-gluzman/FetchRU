@@ -1,11 +1,6 @@
-import { fetchCourses, getCourseInfo } from "./fetchCourses.js";
+import { getOpenCourses, getCourseInfo } from "./fetchCourses.js";
 import { startBot, client } from "./bot.js";
-import * as database from "./database.js";
-
-const FETCH_INTERVAL = 5000;
-
-
-// const courseInfoMap = await getCourseInfo();
+import { database } from "./database.js";
 
 process.on("SIGINT", async () => {
     console.log("Shutting down bot");
@@ -13,10 +8,13 @@ process.on("SIGINT", async () => {
     process.exit(0);
 });
 
+const FETCH_INTERVAL = 5000;
+
+database.importCourseInfo(await getCourseInfo());
 startBot();
 
 setInterval( async () => {
-    const openCourses = await fetchCourses();
+    const openCourses = await getOpenCourses();
 
     for(const course_index of openCourses) {
         const user_ids = database.getUsers(course_index);

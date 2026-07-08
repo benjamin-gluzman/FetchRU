@@ -1,13 +1,28 @@
 import Database from "better-sqlite3";
 
 const db = new Database("FetchRU.db");
+db.exec("PRAGMA foreign_keys = ON;");
 
 // Create all tables
 db.exec(`
+CREATE TABLE IF NOT EXISTS courses (
+   id INTEGER PRIMARY KEY AUTOINCREMENT,
+   title TEXT,
+   course_string TEXT UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS sections (
+   course_index TEXT PRIMARY KEY,
+   course_id INTEGER NOT NULL,
+   section TEXT,
+
+   FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
 CREATE TABLE IF NOT EXISTS watches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id TEXT,
-    course_index CHARACTER(5)
+    course_index TEXT
 );
 `);
 
@@ -25,7 +40,7 @@ const _removeWatch = db.prepare(`
 const _clearWatches = db.prepare(`
     DELETE FROM watches
     WHERE user_id = ?
-`)
+`);
 
 const _getWatches = db.prepare(`
     SELECT course_index
@@ -37,9 +52,38 @@ const _getUsers = db.prepare(`
     SELECT user_id
     FROM watches
     WHERE course_index = ? 
-`)
+`);
  
+const _upsertCourse = db.prepare(`
+    INSERT INTO courses (title, course_string)
+    VALUES (?, ?)
+    ON CONFLICT (course_string)
+    DO UPDATE 
+        SET title = excluded.title
+    RETURNING id
+`);
 
+const _upsertSection = db.prepare(`
+    INSERT INTO sections (course_index, course_id, section)
+    VALUES (?, ?, ?)
+    ON CONFLICT (course_index)
+    DO UPDATE
+        SET course_index = excluded.course_index,
+            section      = excluded.section
+`);
+
+const _getInfoByCourseIndex = db.prepare(`
+    SELECT title, course_string, section
+    FROM watches
+    INNER JOIN sections
+    ON watches.course_index = sections.course_index
+    INNER JOIN courses
+    ON sections.course_id = courses.id
+    WHERE watches.course_index = ?
+`);
+
+
+// Wrap 'private' SQL statements in public functions
 function addWatch(user_id, course_index) {
     _addWatch.run(user_id, course_index);
 }
@@ -60,5 +104,29 @@ function getUsers(course_index) {
     return _getUsers.all(course_index).map(row => row.user_id);
 }
 
+const importCourseInfo = db.transaction(courses => {
+    for(const course of courses) {
+        const id = _upsertCourse.get(course.title, course.courseString).id;
+        console.log(id);
+        for(const section of course.sections) {
+            _upsertSection.run(section.index, id, section.number);
+        }
+    }
+});
 
-export { addWatch, removeWatch, getWatches, getUsers, clearWatches};
+function getInfoByCourseIndex(course_index) {
+    return _getInfoByCourseIndex.get(course_index);
+}
+
+
+const database = {
+    addWatch,
+    removeWatch,
+    clearWatches,
+    getWatches,
+    getUsers,
+    importCourseInfo,
+    getInfoByCourseIndex,
+};
+
+export { database };
