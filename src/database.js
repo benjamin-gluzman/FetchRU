@@ -80,6 +80,13 @@ const _getInfoByCourseIndex = db.prepare(`
     WHERE sections.course_index = ?
 `);
 
+const _getMostWatchedCourses = db.prepare(`
+    SELECT course_index, COUNT(user_id) AS count
+    FROM watches
+    GROUP BY course_index
+    ORDER BY count DESC LIMIT 5
+`);
+
 
 // Wrap 'private' SQL statements in public functions
 function addWatch(user_id, course_index) {
@@ -116,8 +123,12 @@ function getInfoByCourseIndex(course_index) {
     return _getInfoByCourseIndex.get(course_index);
 }
 
+function getMostWatchedCourses() {
+    return _getMostWatchedCourses.all();
+}
 
-const database = {
+
+export const database = {
     addWatch,
     removeWatch,
     clearWatches,
@@ -125,6 +136,5 @@ const database = {
     getUsers,
     importCourseInfo,
     getInfoByCourseIndex,
+    getMostWatchedCourses,
 };
-
-export { database };
