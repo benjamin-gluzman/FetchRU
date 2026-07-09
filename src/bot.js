@@ -41,7 +41,17 @@ const commands = [
 
     new SlashCommandBuilder()
         .setName("clear")
-        .setDescription("Clear all courses you are currently watching")
+        .setDescription("Clear all courses you are currently watching"),
+
+    new SlashCommandBuilder()
+        .setName("search")
+        .setDescription("Search for course indices by the course title and/or section")
+        .addStringOption(option =>
+            option
+                .setName("course")
+                .setDescription("Course index")
+                .setRequired(true)
+        )
 ];
 
 const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
@@ -89,7 +99,6 @@ async function respond_to_check(interaction) {
     let response = "Watching: \n";
     for(const course_index of watches) {
         const info = database.getInfoByCourseIndex(course_index);
-
         response += `Title: ${info.title}  Course: ${info.course_string}  Section: ${info.section} Index: ${course_index} \n`;
     }
     
@@ -100,6 +109,13 @@ async function respond_to_clear(interaction) {
     database.clearWatches(interaction.user.id);
 
     await interaction.reply("All courses being watched have been cleared");
+}
+
+async function respond_to_search(interaction) {
+    const course_index = interaction.options.getString("course");
+    const info = database.getInfoByCourseIndex(course_index);
+
+    await interaction.reply(`Title: ${info.title}  Course: ${info.course_string}  Section: ${info.section} Index: ${course_index} \n`);
 }
 
 function startBot() {
@@ -119,6 +135,7 @@ function startBot() {
         else if(commandName === "unwatch")  respond_to_unwatch(interaction);
         else if(commandName === "check")    respond_to_check(interaction);
         else if(commandName === "clear")    respond_to_clear(interaction);
+        else if(commandName === "search")   respond_to_search(interaction);
     });
 
     // Handles component interactions

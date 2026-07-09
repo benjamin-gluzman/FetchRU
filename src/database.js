@@ -74,12 +74,10 @@ const _upsertSection = db.prepare(`
 
 const _getInfoByCourseIndex = db.prepare(`
     SELECT title, course_string, section
-    FROM watches
-    INNER JOIN sections
-    ON watches.course_index = sections.course_index
+    FROM sections
     INNER JOIN courses
     ON sections.course_id = courses.id
-    WHERE watches.course_index = ?
+    WHERE sections.course_index = ?
 `);
 
 
@@ -107,7 +105,7 @@ function getUsers(course_index) {
 const importCourseInfo = db.transaction(courses => {
     for(const course of courses) {
         const id = _upsertCourse.get(course.title, course.courseString).id;
-        console.log(id);
+
         for(const section of course.sections) {
             _upsertSection.run(section.index, id, section.number);
         }
