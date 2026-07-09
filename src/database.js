@@ -87,6 +87,10 @@ const _getMostWatchedCourses = db.prepare(`
     ORDER BY count DESC LIMIT 5
 `);
 
+const _isValidCourseIndex = db.prepare(`
+    SELECT EXISTS(SELECT 1 FROM sections WHERE course_index = ?) AS valid
+`);
+
 
 // Wrap 'private' SQL statements in public functions
 function addWatch(user_id, course_index) {
@@ -127,6 +131,9 @@ function getMostWatchedCourses() {
     return _getMostWatchedCourses.all();
 }
 
+function isValidCourseIndex(course_index) {
+    return _isValidCourseIndex.get(course_index).valid;
+}
 
 export const database = {
     addWatch,
@@ -137,4 +144,5 @@ export const database = {
     importCourseInfo,
     getInfoByCourseIndex,
     getMostWatchedCourses,
+    isValidCourseIndex,
 };

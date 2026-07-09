@@ -51,9 +51,23 @@ const commands = [
 
 async function respond_to_watch(interaction) {
     const course_index = interaction.options.getString("course");
+    if(!database.isValidCourseIndex(course_index)) {
+        await interaction.reply("Course index is invalid");
+        return;
+    }
+
+    const watches = database.getWatches(interaction.user.id), watchesUsed = watches.length;
+    if(watches.includes(course_index)) {
+        await interaction.reply(`You are already sniping ${course_index}`);
+        return;
+    }
+    
+    if(watchesUsed >= 20) {
+        await interaction.reply("You have no more watches left");
+        return;
+    }
 
     database.addWatch(interaction.user.id, course_index);
-
 
     await interaction.reply({
         components: createWatchComponents(course_index),
@@ -63,7 +77,11 @@ async function respond_to_watch(interaction) {
 
 async function respond_to_unwatch(interaction) {
     const course_index = interaction.options.getString("course");
-    
+    if(!database.getWatches(interaction.user.id).includes(course_index)) {
+        await interaction.reply("Invalid course index");
+        return;
+    }
+
     database.removeWatch(interaction.user.id, course_index);
 
     await interaction.reply({
@@ -89,6 +107,11 @@ async function respond_to_check(interaction) {
 }
 
 async function respond_to_clear(interaction) {
+    if(database.getWatches(interaction.user.id).length === 0) {
+        await interaction.reply("Invalid request: Not currently watching any courses");
+        return;
+    }
+
     database.clearWatches(interaction.user.id);
 
     await interaction.reply("All courses being watched have been cleared");
@@ -96,6 +119,11 @@ async function respond_to_clear(interaction) {
 
 async function respond_to_search(interaction) {
     const course_index = interaction.options.getString("course");
+    if(!database.isValidCourseIndex(course_index)) {
+        await interaction.reply("Course index is invalid");
+        return;
+    }
+
     const info = database.getInfoByCourseIndex(course_index);
 
     await interaction.reply(`Title: ${info.title}  Course: ${info.course_string}  Section: ${info.section} Index: ${course_index} \n`);
