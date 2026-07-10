@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
-import { em } from "./ui/embeds.js";
-import { database } from "./database.js";
+import { em } from "../ui/embeds.js";
+import { database } from "../database.js";
 
 const commands = [
     new SlashCommandBuilder()
@@ -46,7 +46,18 @@ const commands = [
         .setDescription("View the most watched courses")
 ];
 
+async function handle_command(interaction) {
+    const commandName = interaction.commandName;
 
+    switch(commandName) {
+        case "watch":   handle_watch(interaction); break;
+        case "unwatch": handle_unwatch(interaction); break;
+        case "check":   handle_check(interaction); break;
+        case "clear":   handle_clear(interaction); break;
+        case "search":  handle_search(interaction); break;
+        case "stats":   handle_stats(interaction); break;
+    }
+}
 
 
 async function handle_watch(interaction) {
@@ -138,12 +149,5 @@ async function handle_stats(interaction) {
     });
 }
 
-export const cmd = {
-    commands,
-    handle_watch,
-    handle_unwatch,
-    handle_check,
-    handle_clear,
-    handle_search,
-    handle_stats,
-};
+
+export { commands, handle_command };

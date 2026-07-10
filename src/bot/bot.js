@@ -1,5 +1,6 @@
 import { Client, Events, GatewayIntentBits, REST, Routes } from "discord.js";
-import { cmd } from "./commands.js"
+import { commands, handle_command } from "./commands.js";
+import { handle_interaction } from "./interactions.js";
 import dotenv from 'dotenv';
 
 dotenv.config({ path: "./.env" });
@@ -18,7 +19,7 @@ const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
 async function registerCommands() {
     await rest.put(
         Routes.applicationCommands(CLIENT_ID),
-        { body: cmd.commands }
+        { body: commands }
     );
 
     console.log('commands registered');
@@ -32,34 +33,15 @@ function startBot() {
 
     // Respond to slash commands
     client.on("interactionCreate", async (interaction) => {
-        if(!interaction.isChatInputCommand())
-            return;
-
-        const commandName = interaction.commandName;
-
-        switch(commandName) {
-            case "watch":   cmd.handle_watch(interaction); break;
-            case "unwatch": cmd.handle_unwatch(interaction); break;
-            case "check":   cmd.handle_check(interaction); break;
-            case "clear":   cmd.handle_clear(interaction); break;
-            case "search":  cmd.handle_search(interaction); break;
-            case "stats":   cmd.handle_stats(interaction); break;
-        }  
+        if(interaction.isChatInputCommand())
+            await handle_command(interaction); // Handles slash commands
+        else
+            await handle_interaction(interaction); // Handles component interactions
     });
-
-    // Handles component interactions
-    client.on("interactionCreate", async (interaction) => {
-        if(!interaction.isButton()) return;
-
-
-    })
-
 
     registerCommands();
     client.login(BOT_TOKEN);
 }
-
-
 
 
 export {startBot, client};

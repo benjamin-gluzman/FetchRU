@@ -1,5 +1,5 @@
 import { database } from "./database.js";
-import { startBot, client } from "./bot.js";
+import { startBot, client } from "./bot/bot.js";
 import { getCourseInfo } from "./rutgersApi.js";
 import { startPolling } from "./poller.js";
 
