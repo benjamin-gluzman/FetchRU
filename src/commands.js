@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
-import { createWatchComponents, createUnwatchComponents, createCheckComponents } from "./components.js";
+import { createWatchComponents, createUnwatchComponents, createCheckComponents } from "./notifications.js";
 import { database } from "./database.js";
 
 const commands = [
@@ -49,7 +49,7 @@ const commands = [
 
 
 
-async function respond_to_watch(interaction) {
+async function handle_watch(interaction) {
     const course_index = interaction.options.getString("course");
     if(!database.isValidCourseIndex(course_index)) {
         await interaction.reply("Course index is invalid");
@@ -75,7 +75,7 @@ async function respond_to_watch(interaction) {
     });
 }
 
-async function respond_to_unwatch(interaction) {
+async function handle_unwatch(interaction) {
     const course_index = interaction.options.getString("course");
     if(!database.getWatches(interaction.user.id).includes(course_index)) {
         await interaction.reply("Invalid course index");
@@ -90,7 +90,7 @@ async function respond_to_unwatch(interaction) {
     });
 }
 
-async function respond_to_check(interaction) {
+async function handle_check(interaction) {
     const watches = database.getWatches(interaction.user.id);
     if(watches.length === 0) {
         await interaction.reply("Not currently watching any courses");
@@ -106,7 +106,7 @@ async function respond_to_check(interaction) {
     await interaction.reply(response);
 }
 
-async function respond_to_clear(interaction) {
+async function handle_clear(interaction) {
     if(database.getWatches(interaction.user.id).length === 0) {
         await interaction.reply("Invalid request: Not currently watching any courses");
         return;
@@ -117,7 +117,7 @@ async function respond_to_clear(interaction) {
     await interaction.reply("All courses being watched have been cleared");
 }
 
-async function respond_to_search(interaction) {
+async function handle_search(interaction) {
     const course_index = interaction.options.getString("course");
     if(!database.isValidCourseIndex(course_index)) {
         await interaction.reply("Course index is invalid");
@@ -129,7 +129,7 @@ async function respond_to_search(interaction) {
     await interaction.reply(`Title: ${info.title}  Course: ${info.course_string}  Section: ${info.section} Index: ${course_index} \n`);
 }
 
-async function respond_to_stats(interaction) {
+async function handle_stats(interaction) {
     const mostWatched = database.getMostWatchedCourses();
     
     let response = "Top 5 Most Watched courses: \n";
@@ -143,10 +143,10 @@ async function respond_to_stats(interaction) {
 
 export const cmd = {
     commands,
-    respond_to_watch,
-    respond_to_unwatch,
-    respond_to_check,
-    respond_to_clear,
-    respond_to_search,
-    respond_to_stats,
+    handle_watch,
+    handle_unwatch,
+    handle_check,
+    handle_clear,
+    handle_search,
+    handle_stats,
 };

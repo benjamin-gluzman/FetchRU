@@ -38,12 +38,12 @@ function startBot() {
         const commandName = interaction.commandName;
 
         switch(commandName) {
-            case "watch":   cmd.respond_to_watch(interaction); break;
-            case "unwatch": cmd.respond_to_unwatch(interaction); break;
-            case "check":   cmd.respond_to_check(interaction); break;
-            case "clear":   cmd.respond_to_clear(interaction); break;
-            case "search":  cmd.respond_to_search(interaction); break;
-            case "stats":   cmd.respond_to_stats(interaction); break;
+            case "watch":   cmd.handle_watch(interaction); break;
+            case "unwatch": cmd.handle_unwatch(interaction); break;
+            case "check":   cmd.handle_check(interaction); break;
+            case "clear":   cmd.handle_clear(interaction); break;
+            case "search":  cmd.handle_search(interaction); break;
+            case "stats":   cmd.handle_stats(interaction); break;
         }  
     });
 
