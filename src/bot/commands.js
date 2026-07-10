@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
-import { em } from "../ui/embeds.js";
 import { database } from "../database.js";
+import { em } from "../ui/embeds.js";
+
 
 const commands = [
     new SlashCommandBuilder()
@@ -47,9 +48,7 @@ const commands = [
 ];
 
 async function handle_command(interaction) {
-    const commandName = interaction.commandName;
-
-    switch(commandName) {
+    switch(interaction.commandName) {
         case "watch":   handle_watch(interaction); break;
         case "unwatch": handle_unwatch(interaction); break;
         case "check":   handle_check(interaction); break;

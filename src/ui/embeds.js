@@ -1,4 +1,3 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, TextDisplayBuilder} from "discord.js";
 import { EmbedBuilder } from "discord.js";
 import { database } from "../database.js";
 
@@ -134,6 +133,20 @@ function get_notify_embed(course_info, course_index) {
     return embed;
 }
 
+function get_rewatch_embed(interaction, course_index) {
+    const embed = new EmbedBuilder()
+    .setTitle("Successfully Re-added Watch Request!")
+    .setDescription(`Successfully re-added course ${styleText(course_index)} to your watch requests.`)
+    .setFooter({
+        text: interaction.user.username,
+        iconURL: interaction.user.displayAvatarURL()
+    })
+
+    addExtraStyle(embed);
+
+    return embed;
+}
+
 function addExtraStyle(embed) {
     embed
     .setTimestamp()
@@ -151,6 +164,7 @@ export const em = {
     get_clear_embed,
     get_search_embed,
     get_stats_embed,
+    get_rewatch_embed,
 };
 
 export { get_notify_embed };

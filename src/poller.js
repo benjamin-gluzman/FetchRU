@@ -1,6 +1,7 @@
 import { getOpenCourses } from "./rutgersApi.js";
 import { database } from "./database.js";
 import { get_notify_embed } from "./ui/embeds.js";
+import { get_notify_component } from "./ui/components.js";
 import { client } from "./bot/bot.js";
 
 const FETCH_INTERVAL = 5000;
@@ -30,7 +31,8 @@ async function notify_user_of_open_course(user, course_index) {
     const course_info = database.getInfoByCourseIndex(course_index);
 
     await user.send({
-        embeds: [ get_notify_embed(course_info, course_index) ]
+        embeds: [ get_notify_embed(course_info, course_index) ],
+        components: [ get_notify_component(course_index) ]
     });
 }
 
