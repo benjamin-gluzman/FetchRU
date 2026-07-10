@@ -1,10 +1,10 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, TextDisplayBuilder} from "discord.js";
 import { EmbedBuilder } from "discord.js";
-import { database } from "./database.js";
+import { database } from "../database.js";
 
 const EMBED_COLOR = 0x0099FF;
 
-async function reply_to_watch(interaction, course_index) {
+function get_watch_embed(interaction, course_index) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully added Watch Request!")
     .setDescription(`Successfully added course ${styleText(course_index)} to your watch requests.`)
@@ -15,12 +15,10 @@ async function reply_to_watch(interaction, course_index) {
 
     addExtraStyle(embed);
 
-    await interaction.reply({
-        embeds: [embed]
-    });
+    return embed;
 }
 
-async function reply_to_unwatch(interaction, course_index) {
+function get_unwatch_embed(interaction, course_index) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully Removed Course!")
     .setDescription(`Successfully removed course ${styleText(course_index)} from your watch requests.`)
@@ -31,12 +29,10 @@ async function reply_to_unwatch(interaction, course_index) {
 
     addExtraStyle(embed);
 
-    await interaction.reply({
-        embeds: [embed]
-    });
+    return embed;
 }
 
-async function reply_to_check(interaction, watches) {
+function get_check_embed(interaction, watches) {
     const body = watches.map(course_index => {
         const info = database.getInfoByCourseIndex(course_index);
         return `${styleText(course_index)} - Section ${info.section} | ${info.title}`;
@@ -52,24 +48,20 @@ async function reply_to_check(interaction, watches) {
 
     addExtraStyle(embed);
 
-    await interaction.reply({
-        embeds: [embed]
-    });
+    return embed;
 }
 
-async function reply_to_clear(interaction) {
+function get_clear_embed() {
     const embed = new EmbedBuilder()
     .setTitle("Successful clear!")
     .setDescription("Successfully removed all courses from your watch requests")
 
     addExtraStyle(embed);
 
-    await interaction.reply({
-        embeds: [embed]
-    });
+    return embed;
 }
 
-async function reply_to_search(interaction, info, course_index) {
+function get_search_embed(info, course_index) {
     const embed = new EmbedBuilder()
     .setTitle(`Search results for index ${styleText(course_index)}`)
     .addFields(
@@ -92,12 +84,10 @@ async function reply_to_search(interaction, info, course_index) {
 
     addExtraStyle(embed);
 
-    await interaction.reply({
-        embeds: [embed]
-    });
+    return embed;
 }
 
-async function reply_to_stats(interaction, mostWatched) {
+function get_stats_embed(mostWatched) {
     const body = mostWatched.map(watch => {
         const info = database.getInfoByCourseIndex(watch.course_index);
         return `Watches: ${watch.count} - ${styleText(watch.course_index)} - Section ${info.section} | ${info.title}`;
@@ -112,20 +102,16 @@ async function reply_to_stats(interaction, mostWatched) {
 
     addExtraStyle(embed);
 
-    await interaction.reply({
-        embeds: [embed]
-    });
+    return embed;
 }
 
-async function notify_user_of_open_course(user, course_index) {
-    const info = database.getInfoByCourseIndex(course_index);
-    
+function get_notify_embed(course_info, course_index) {
     const embed = new EmbedBuilder()
-    .setTitle(`${info.title} (${course_index}) has opened!`)
+    .setTitle(`${course_info.title} (${course_index}) has opened!`)
     .addFields(
         {
             name: "Course Number",
-            value: styleText(info.course_string),
+            value: styleText(course_info.course_string),
             inline: true
         },
         {
@@ -135,19 +121,17 @@ async function notify_user_of_open_course(user, course_index) {
         },
         {
             name: "Section",
-            value: styleText(info.section),
+            value: styleText(course_info.section),
             inline: true
         }
     )
     .setFooter({
         text: "FetchRU"
-    })
+    });
 
     addExtraStyle(embed);
 
-    await user.send({
-        embeds: [embed]
-    });
+    return embed;
 }
 
 function addExtraStyle(embed) {
@@ -160,14 +144,13 @@ function styleText(text) {
     return `\`${text}\``;
 }
 
-const replier = {
-    reply_to_watch,
-    reply_to_unwatch,
-    reply_to_check,
-    reply_to_clear,
-    reply_to_search,
-    reply_to_stats,
+export const em = {
+    get_watch_embed,
+    get_unwatch_embed,
+    get_check_embed,
+    get_clear_embed,
+    get_search_embed,
+    get_stats_embed,
 };
 
-export { replier };
-export { notify_user_of_open_course };
+export { get_notify_embed };

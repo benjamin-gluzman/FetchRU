@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
-import { replier } from "./notifications.js";
+import { em } from "./ui/embeds.js";
 import { database } from "./database.js";
 
 const commands = [
@@ -69,7 +69,9 @@ async function handle_watch(interaction) {
 
     database.addWatch(interaction.user.id, course_index);
 
-    await replier.reply_to_watch(interaction, course_index);
+    await interaction.reply({
+        embeds: [ em.get_watch_embed(interaction, course_index) ]
+    });
 }
 
 async function handle_unwatch(interaction) {
@@ -81,7 +83,9 @@ async function handle_unwatch(interaction) {
 
     database.removeWatch(interaction.user.id, course_index);
 
-    await replier.reply_to_unwatch(interaction, course_index);
+    await interaction.reply({
+        embeds: [ em.get_unwatch_embed(interaction, course_index) ]
+    });
 }
 
 async function handle_check(interaction) {
@@ -91,7 +95,9 @@ async function handle_check(interaction) {
         return;
     }
     
-    await replier.reply_to_check(interaction, watches);
+    await interaction.reply({
+        embeds: [ em.get_check_embed(interaction, watches) ]
+    });
 }
 
 async function handle_clear(interaction) {
@@ -102,7 +108,9 @@ async function handle_clear(interaction) {
 
     database.clearWatches(interaction.user.id);
 
-    await replier.reply_to_clear(interaction);
+    await interaction.reply({
+        embeds: [ em.get_clear_embed() ]
+    });
 }
 
 async function handle_search(interaction) {
@@ -114,7 +122,9 @@ async function handle_search(interaction) {
 
     const info = database.getInfoByCourseIndex(course_index);
 
-    await replier.reply_to_search(interaction, info, course_index)
+    await interaction.reply({
+        embeds: [ em.get_search_embed(info, course_index) ]
+    });
 }
 
 async function handle_stats(interaction) {
@@ -123,7 +133,9 @@ async function handle_stats(interaction) {
         await interaction.reply("No courses currently being watched");
     }
 
-    await replier.reply_to_stats(interaction, mostWatched);
+    await interaction.reply({
+        embeds: [ em.get_stats_embed(mostWatched) ]
+    });
 }
 
 export const cmd = {
