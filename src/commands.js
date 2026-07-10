@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
-import { createWatchComponents, createUnwatchComponents, createCheckComponents } from "./notifications.js";
+import { replier } from "./notifications.js";
 import { database } from "./database.js";
 
 const commands = [
@@ -69,10 +69,7 @@ async function handle_watch(interaction) {
 
     database.addWatch(interaction.user.id, course_index);
 
-    await interaction.reply({
-        components: createWatchComponents(course_index),
-        flags: MessageFlags.IsComponentsV2
-    });
+    await replier.reply_to_watch(interaction, course_index);
 }
 
 async function handle_unwatch(interaction) {
@@ -84,10 +81,7 @@ async function handle_unwatch(interaction) {
 
     database.removeWatch(interaction.user.id, course_index);
 
-    await interaction.reply({
-        components: createUnwatchComponents(course_index),
-        flags: MessageFlags.IsComponentsV2
-    });
+    await replier.reply_to_unwatch(interaction, course_index);
 }
 
 async function handle_check(interaction) {
@@ -96,14 +90,8 @@ async function handle_check(interaction) {
         await interaction.reply("Not currently watching any courses");
         return;
     }
-
-    let response = "Watching: \n";
-    for(const course_index of watches) {
-        const info = database.getInfoByCourseIndex(course_index);
-        response += `Title: ${info.title}  Course: ${info.course_string}  Section: ${info.section} Index: ${course_index} \n`;
-    }
     
-    await interaction.reply(response);
+    await replier.reply_to_check(interaction, watches);
 }
 
 async function handle_clear(interaction) {
@@ -114,7 +102,7 @@ async function handle_clear(interaction) {
 
     database.clearWatches(interaction.user.id);
 
-    await interaction.reply("All courses being watched have been cleared");
+    await replier.reply_to_clear(interaction);
 }
 
 async function handle_search(interaction) {
@@ -126,19 +114,16 @@ async function handle_search(interaction) {
 
     const info = database.getInfoByCourseIndex(course_index);
 
-    await interaction.reply(`Title: ${info.title}  Course: ${info.course_string}  Section: ${info.section} Index: ${course_index} \n`);
+    await replier.reply_to_search(interaction, info, course_index)
 }
 
 async function handle_stats(interaction) {
     const mostWatched = database.getMostWatchedCourses();
-    
-    let response = "Top 5 Most Watched courses: \n";
-    for(const watch of mostWatched) {
-        const info = database.getInfoByCourseIndex(watch.course_index);
-        response += `Watches: ${watch.count}\nTitle: ${info.title}  Course: ${info.course_string}  Section: ${info.section} Index: ${watch.course_index} \n`;
+    if(mostWatched.length === 0) {
+        await interaction.reply("No courses currently being watched");
     }
 
-    await interaction.reply(response);
+    await replier.reply_to_stats(interaction, mostWatched);
 }
 
 export const cmd = {
