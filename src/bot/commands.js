@@ -47,28 +47,28 @@ const commands = [
         .setDescription("View the most watched courses")
 ];
 
-async function handle_command(interaction) {
+async function handleCommand(interaction) {
     switch(interaction.commandName) {
-        case "watch":   handle_watch(interaction); break;
-        case "unwatch": handle_unwatch(interaction); break;
-        case "check":   handle_check(interaction); break;
-        case "clear":   handle_clear(interaction); break;
-        case "search":  handle_search(interaction); break;
-        case "stats":   handle_stats(interaction); break;
+        case "watch":   handleWatch(interaction); break;
+        case "unwatch": handleUnwatch(interaction); break;
+        case "check":   handleCheck(interaction); break;
+        case "clear":   handleClear(interaction); break;
+        case "search":  handleSearch(interaction); break;
+        case "stats":   handleStats(interaction); break;
     }
 }
 
 
-async function handle_watch(interaction) {
-    const course_index = interaction.options.getString("course");
-    if(!database.isValidCourseIndex(course_index)) {
+async function handleWatch(interaction) {
+    const courseIndex = interaction.options.getString("course");
+    if(!database.isValidCourseIndex(courseIndex)) {
         await interaction.reply("Course index is invalid");
         return;
     }
 
     const watches = database.getWatches(interaction.user.id), watchesUsed = watches.length;
-    if(watches.includes(course_index)) {
-        await interaction.reply(`You are already sniping ${course_index}`);
+    if(watches.includes(courseIndex)) {
+        await interaction.reply(`You are already sniping ${courseIndex}`);
         return;
     }
     
@@ -77,28 +77,28 @@ async function handle_watch(interaction) {
         return;
     }
 
-    database.addWatch(interaction.user.id, course_index);
+    database.addWatch(interaction.user.id, courseIndex);
 
     await interaction.reply({
-        embeds: [ em.get_watch_embed(interaction, course_index) ]
+        embeds: [ em.getWatchEmbed(interaction, courseIndex) ]
     });
 }
 
-async function handle_unwatch(interaction) {
-    const course_index = interaction.options.getString("course");
-    if(!database.getWatches(interaction.user.id).includes(course_index)) {
+async function handleUnwatch(interaction) {
+    const courseIndex = interaction.options.getString("course");
+    if(!database.getWatches(interaction.user.id).includes(courseIndex)) {
         await interaction.reply("Invalid course index");
         return;
     }
 
-    database.removeWatch(interaction.user.id, course_index);
+    database.removeWatch(interaction.user.id, courseIndex);
 
     await interaction.reply({
-        embeds: [ em.get_unwatch_embed(interaction, course_index) ]
+        embeds: [ em.getUnwatchEmbed(interaction, courseIndex) ]
     });
 }
 
-async function handle_check(interaction) {
+async function handleCheck(interaction) {
     const watches = database.getWatches(interaction.user.id);
     if(watches.length === 0) {
         await interaction.reply("Not currently watching any courses");
@@ -106,11 +106,11 @@ async function handle_check(interaction) {
     }
     
     await interaction.reply({
-        embeds: [ em.get_check_embed(interaction, watches) ]
+        embeds: [ em.getCheckEmbed(interaction, watches) ]
     });
 }
 
-async function handle_clear(interaction) {
+async function handleClear(interaction) {
     if(database.getWatches(interaction.user.id).length === 0) {
         await interaction.reply("Invalid request: Not currently watching any courses");
         return;
@@ -119,34 +119,34 @@ async function handle_clear(interaction) {
     database.clearWatches(interaction.user.id);
 
     await interaction.reply({
-        embeds: [ em.get_clear_embed() ]
+        embeds: [ em.getClearEmbed() ]
     });
 }
 
-async function handle_search(interaction) {
-    const course_index = interaction.options.getString("course");
-    if(!database.isValidCourseIndex(course_index)) {
+async function handleSearch(interaction) {
+    const courseIndex = interaction.options.getString("course");
+    if(!database.isValidCourseIndex(courseIndex)) {
         await interaction.reply("Course index is invalid");
         return;
     }
 
-    const info = database.getInfoByCourseIndex(course_index);
+    const info = database.getInfoByCourseIndex(courseIndex);
 
     await interaction.reply({
-        embeds: [ em.get_search_embed(info, course_index) ]
+        embeds: [ em.getSearchEmbed(info, courseIndex) ]
     });
 }
 
-async function handle_stats(interaction) {
+async function handleStats(interaction) {
     const mostWatched = database.getMostWatchedCourses();
     if(mostWatched.length === 0) {
         await interaction.reply("No courses currently being watched");
     }
 
     await interaction.reply({
-        embeds: [ em.get_stats_embed(mostWatched) ]
+        embeds: [ em.getStatsEmbed(mostWatched) ]
     });
 }
 
 
-export { commands, handle_command };
+export { commands, handleCommand };

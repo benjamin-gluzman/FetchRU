@@ -1,7 +1,7 @@
 import { getOpenCourses } from "./rutgersApi.js";
 import { database } from "./database.js";
-import { get_notify_embed } from "./ui/embeds.js";
-import { get_notify_component } from "./ui/components.js";
+import { getNotifyEmbed } from "./ui/embeds.js";
+import { getNotifyComponent } from "./ui/components.js";
 import { client } from "./bot/bot.js";
 
 const FETCH_INTERVAL = 5000;
@@ -10,29 +10,28 @@ function startPolling() {
     setInterval( async () => {
         const openCourses = await getOpenCourses();
 
-        for(const course_index of openCourses) {
-            const user_ids = database.getUsers(course_index);
+        for(const courseIndex of openCourses) {
+            const userIds = database.getUsers(courseIndex);
 
-            for(const user_id of user_ids) {
-                const user = await client.users.fetch(user_id);
+            for(const userId of userIds) {
+                const user = await client.users.fetch(userId);
                 
-                // possibly await this
-                await notify_user_of_open_course(user, course_index);
+                await notifyUser(user, courseIndex);
                 
                 // move this to another file
-                database.removeWatch(user_id, course_index);
+                database.removeWatch(userId, courseIndex);
             }
         }
 
     }, FETCH_INTERVAL);
 }
 
-async function notify_user_of_open_course(user, course_index) {
-    const course_info = database.getInfoByCourseIndex(course_index);
+async function notifyUser(user, courseIndex) {
+    const courseInfo = database.getInfoByCourseIndex(courseIndex);
 
     await user.send({
-        embeds: [ get_notify_embed(course_info, course_index) ],
-        components: [ get_notify_component(course_index) ]
+        embeds: [ getNotifyEmbed(courseInfo, courseIndex) ],
+        components: [ getNotifyComponent(courseIndex) ]
     });
 }
 

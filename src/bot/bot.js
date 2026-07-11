@@ -1,6 +1,6 @@
 import { Client, Events, GatewayIntentBits, REST, Routes } from "discord.js";
-import { commands, handle_command } from "./commands.js";
-import { handle_interaction } from "./interactions.js";
+import { commands, handleCommand } from "./commands.js";
+import { handleInteraction } from "./interactions.js";
 import dotenv from 'dotenv';
 
 dotenv.config({ path: "./.env" });
@@ -25,7 +25,7 @@ async function registerCommands() {
     console.log('commands registered');
 }
 
-function startBot() {
+async function startBot() {
     client.on("clientReady", () => {
         console.log("Bot is Ready!");
         console.log(`Tag: ${client.user.tag}`);
@@ -34,13 +34,13 @@ function startBot() {
     // Respond to slash commands
     client.on("interactionCreate", async (interaction) => {
         if(interaction.isChatInputCommand())
-            await handle_command(interaction); // Handles slash commands
+            await handleCommand(interaction); // Handles slash commands
         else
-            await handle_interaction(interaction); // Handles component interactions
+            await handleInteraction(interaction); // Handles component interactions
     });
 
-    registerCommands();
-    client.login(BOT_TOKEN);
+    await registerCommands();
+    await client.login(BOT_TOKEN);
 }
 
 

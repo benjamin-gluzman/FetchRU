@@ -12,5 +12,5 @@ process.on("SIGINT", async () => {
 
 database.importCourseInfo(await getCourseInfo());
 
-startBot();
+await startBot();
 startPolling();

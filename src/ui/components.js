@@ -2,22 +2,22 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, TextDisplayBuilder} from 
 
 const WEBREG_URL = "https://sims.rutgers.edu/webreg/editSchedule.htm?login=cas&semesterSelection=92026&indexList="
 
-function get_watch_components() {
+function getWatchComponent() {
 
 }
 
-function get_unwatch_components() {
+function getUnwatchComponent() {
 
 }
 
-function get_notify_component(course_index) {
+function getNotifyComponent(courseIndex) {
     const registerBtn = new ButtonBuilder()
-    .setURL(WEBREG_URL + course_index)
+    .setURL(WEBREG_URL + courseIndex)
     .setLabel("Register")
     .setStyle(ButtonStyle.Link);
 
     const rewatchBtn = new ButtonBuilder()
-    .setCustomId(`rewatch ${course_index}`)
+    .setCustomId(`rewatch ${courseIndex}`)
     .setLabel("Rewatch")
     .setStyle(ButtonStyle.Primary);
 
@@ -27,4 +27,4 @@ function get_notify_component(course_index) {
     return row;
 }
 
-export { get_notify_component };
+export { getNotifyComponent };
