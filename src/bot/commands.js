@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
 import { database } from "../database.js";
 import { em } from "../ui/embeds.js";
+import { cm } from "../ui/components.js";
 
 
 const commands = [
@@ -34,13 +35,13 @@ const commands = [
 
     new SlashCommandBuilder()
         .setName("search")
-        .setDescription("Search for course indices by the course title and/or section")
+        .setDescription("Search for course indices by the course number")
         .addStringOption(option =>
             option
-                .setName("index")
-                .setDescription("Course index")
+                .setName("number")
+                .setDescription("Course number")
                 .setRequired(true)
-        ),
+        )
 ];
 
 async function handleCommand(interaction) {
@@ -120,16 +121,19 @@ async function handleClear(interaction) {
 }
 
 async function handleSearch(interaction) {
-    const courseIndex = interaction.options.getString("index");
-    if(!database.isValidCourseIndex(courseIndex)) {
-        await interaction.reply("Course index is invalid");
+    const courseString = interaction.options.getString("number");
+
+    if(!database.isValidCourseString(courseString)) {
+        await interaction.reply("Course number is invalid");
         return;
     }
 
-    const courseInfo = database.getInfoByCourseIndex(courseIndex);
+    const courseInfo = database.getInfoByCourseString(courseString),
+        sectionInfo = database.getSectionInfoByCourseString(courseString);
 
     await interaction.reply({
-        embeds: [ em.getSearchEmbed(interaction.user, courseInfo, courseIndex) ]
+        embeds: [ em.getSearchEmbed(interaction.user, courseInfo, sectionInfo, 0) ],
+        components: [ cm.getSearchComponent(courseString, 0, sectionInfo.length) ]
     });
 }
 

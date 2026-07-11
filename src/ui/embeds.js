@@ -47,28 +47,26 @@ function getClearEmbed(user) {
     return embed;
 }
 
-function getSearchEmbed(user, courseInfo, courseIndex) {
+function getSearchEmbed(user, courseInfo, sectionInfo, currPage) {
     const embed = new EmbedBuilder()
-    .setTitle(`Search results for index ${styleText(courseIndex)}`)
+    .setTitle(`Search results for:\n${courseInfo.courseString} (${courseInfo.title})`)
     .addFields(
         {
-            name: "Title",
-            value: styleText(courseInfo.title),
-            inline: true
-        },
-        {
-            name: "Course Number",
-            value: styleText(courseInfo.courseString),
-            inline: true
-        },
-        {
             name: "Section",
-            value: styleText(courseInfo.section),
+            value: styleText(sectionInfo[currPage].section),
+            inline: true
+        },
+        {
+            name: "Index",
+            value: styleText(sectionInfo[currPage].courseIndex),
             inline: true
         }
-    );
+    )
+    .setFooter({
+        text: `Page ${+currPage + 1}/${sectionInfo.length}`
+    })
 
-    addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
+    // addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
     return embed;
 }
 
@@ -133,7 +131,6 @@ export const em = {
     getCheckEmbed,
     getClearEmbed,
     getSearchEmbed,
-    getStatsEmbed,
     getRewatchEmbed,
 };
 

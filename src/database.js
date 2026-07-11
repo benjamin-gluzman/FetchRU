@@ -72,12 +72,33 @@ const _upsertSection = db.prepare(`
             section      = excluded.section
 `);
 
+
+const _isValidCourseIndex = db.prepare(`
+    SELECT EXISTS(SELECT 1 FROM sections WHERE course_index = ?) AS valid
+`);
+
 const _getInfoByCourseIndex = db.prepare(`
     SELECT title, course_string AS courseString, section, course_index AS courseIndex
     FROM sections
     INNER JOIN courses
     ON sections.course_id = courses.id
     WHERE sections.course_index = ?
+`);
+
+const _isValidCourseString = db.prepare(`
+    SELECT EXISTS(SELECT 1 FROM courses WHERE course_string = ?) AS valid
+`);
+
+const _getInfoByCourseString = db.prepare(`
+    SELECT title, course_string AS courseString
+    FROM courses
+    WHERE course_string = ?
+`);
+
+const _getSectionInfoByCourseString = db.prepare(`
+    SELECT course_index AS courseIndex, section
+    FROM sections
+    WHERE course_id = (SELECT id FROM courses WHERE course_string = ?)
 `);
 
 const _getMostWatchedCourses = db.prepare(`
@@ -87,9 +108,7 @@ const _getMostWatchedCourses = db.prepare(`
     ORDER BY count DESC LIMIT 5
 `);
 
-const _isValidCourseIndex = db.prepare(`
-    SELECT EXISTS(SELECT 1 FROM sections WHERE course_index = ?) AS valid
-`);
+
 
 
 // Wrap 'private' SQL statements in public functions
@@ -123,17 +142,31 @@ const importCourseInfo = db.transaction(courses => {
     }
 });
 
+function isValidCourseIndex(course_index) {
+    return _isValidCourseIndex.get(course_index).valid;
+}
+
 function getInfoByCourseIndex(course_index) {
     return _getInfoByCourseIndex.get(course_index);
+}
+
+function isValidCourseString(course_string) {
+    return _isValidCourseString.get(course_string).valid;
+}
+
+function getInfoByCourseString(course_string) {
+    return _getInfoByCourseString.get(course_string);
+}
+
+function getSectionInfoByCourseString(course_string) {
+    return _getSectionInfoByCourseString.all(course_string);
 }
 
 function getMostWatchedCourses() {
     return _getMostWatchedCourses.all();
 }
 
-function isValidCourseIndex(course_index) {
-    return _isValidCourseIndex.get(course_index).valid;
-}
+
 
 export const database = {
     addWatch,
@@ -142,7 +175,10 @@ export const database = {
     getWatches,
     getUsers,
     importCourseInfo,
-    getInfoByCourseIndex,
-    getMostWatchedCourses,
     isValidCourseIndex,
+    getInfoByCourseIndex,
+    isValidCourseString,
+    getInfoByCourseString,
+    getSectionInfoByCourseString,
+    getMostWatchedCourses,
 };
