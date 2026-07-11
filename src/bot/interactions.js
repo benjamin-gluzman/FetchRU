@@ -9,11 +9,11 @@ async function handleInteraction(interaction) {
     }
 }
 
-async function handleRewatch(interaction, course_index) {
-    database.addWatch(interaction.user.id, course_index);
+async function handleRewatch(interaction, courseIndex) {
+    database.addWatch(interaction.user.id, courseIndex);
 
     await interaction.reply({
-        embeds: [ em.getRewatchEmbed(interaction, course_index) ]
+        embeds: [ em.getRewatchEmbed(interaction.user, courseIndex) ]
     });
 }
 

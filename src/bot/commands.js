@@ -9,7 +9,7 @@ const commands = [
         .setDescription("Watch a course index")
         .addStringOption(option =>
             option
-                .setName("course")
+                .setName("index")
                 .setDescription("Course index")
                 .setRequired(true)
         ),
@@ -19,7 +19,7 @@ const commands = [
         .setDescription("Stop watching a course index")
         .addStringOption(option => 
             option
-                .setName("course")
+                .setName("index")
                 .setDescription("Course index")
                 .setRequired(true)
         ),
@@ -37,14 +37,10 @@ const commands = [
         .setDescription("Search for course indices by the course title and/or section")
         .addStringOption(option =>
             option
-                .setName("course")
+                .setName("index")
                 .setDescription("Course index")
                 .setRequired(true)
         ),
-    
-    new SlashCommandBuilder()
-        .setName("stats")
-        .setDescription("View the most watched courses")
 ];
 
 async function handleCommand(interaction) {
@@ -60,7 +56,7 @@ async function handleCommand(interaction) {
 
 
 async function handleWatch(interaction) {
-    const courseIndex = interaction.options.getString("course");
+    const courseIndex = interaction.options.getString("index");
     if(!database.isValidCourseIndex(courseIndex)) {
         await interaction.reply("Course index is invalid");
         return;
@@ -79,11 +75,13 @@ async function handleWatch(interaction) {
 
     database.addWatch(interaction.user.id, courseIndex);
 
-    await reply(interaction, [ em.getWatchEmbed(interaction, courseIndex) ], []);
+    await interaction.reply({
+        embeds: [ em.getWatchEmbed(interaction.user, courseIndex, watchesUsed + 1) ]
+    });
 }
 
 async function handleUnwatch(interaction) {
-    const courseIndex = interaction.options.getString("course");
+    const courseIndex = interaction.options.getString("index");
     if(!database.getWatches(interaction.user.id).includes(courseIndex)) {
         await interaction.reply("Invalid course index");
         return;
@@ -91,7 +89,9 @@ async function handleUnwatch(interaction) {
 
     database.removeWatch(interaction.user.id, courseIndex);
 
-    await reply(interaction, [ em.getUnwatchEmbed(interaction, courseIndex) ], []);
+    await interaction.reply({
+        embeds: [ em.getUnwatchEmbed(interaction.user, courseIndex) ]
+    });
 }
 
 async function handleCheck(interaction) {
@@ -101,7 +101,9 @@ async function handleCheck(interaction) {
         return;
     }
     
-    await reply(interaction, [ em.getCheckEmbed(interaction, watches) ], []);
+    await interaction.reply({
+        embeds: [ em.getCheckEmbed(interaction.user, watches.map(courseIndex => database.getInfoByCourseIndex(courseIndex))) ]
+    });
 }
 
 async function handleClear(interaction) {
@@ -112,35 +114,22 @@ async function handleClear(interaction) {
 
     database.clearWatches(interaction.user.id);
 
-    await reply(interaction, [ em.getClearEmbed() ], []);
+    await interaction.reply({
+        embeds: [ em.getClearEmbed(interaction.user) ]
+    });
 }
 
 async function handleSearch(interaction) {
-    const courseIndex = interaction.options.getString("course");
+    const courseIndex = interaction.options.getString("index");
     if(!database.isValidCourseIndex(courseIndex)) {
         await interaction.reply("Course index is invalid");
         return;
     }
 
-    const info = database.getInfoByCourseIndex(courseIndex);
+    const courseInfo = database.getInfoByCourseIndex(courseIndex);
 
-    await reply(interaction, [ em.getSearchEmbed(info, courseIndex) ], []);
-}
-
-async function handleStats(interaction) {
-    const mostWatched = database.getMostWatchedCourses();
-    if(mostWatched.length === 0) {
-        await interaction.reply("No courses currently being watched");
-    }
-
-
-    await reply(interaction, [ em.getStatsEmbed(mostWatched) ], []);
-}
-
-async function reply(interaction, embeds, components) {
     await interaction.reply({
-        embeds,
-        components
+        embeds: [ em.getSearchEmbed(interaction.user, courseInfo, courseIndex) ]
     });
 }
 

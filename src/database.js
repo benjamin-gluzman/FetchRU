@@ -73,7 +73,7 @@ const _upsertSection = db.prepare(`
 `);
 
 const _getInfoByCourseIndex = db.prepare(`
-    SELECT title, course_string, section
+    SELECT title, course_string AS courseString, section, course_index AS courseIndex
     FROM sections
     INNER JOIN courses
     ON sections.course_id = courses.id
@@ -81,7 +81,7 @@ const _getInfoByCourseIndex = db.prepare(`
 `);
 
 const _getMostWatchedCourses = db.prepare(`
-    SELECT course_index, COUNT(user_id) AS count
+    SELECT course_index AS courseIndex, COUNT(user_id) AS count
     FROM watches
     GROUP BY course_index
     ORDER BY count DESC LIMIT 5

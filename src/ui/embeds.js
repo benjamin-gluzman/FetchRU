@@ -1,106 +1,74 @@
 import { EmbedBuilder } from "discord.js";
-import { database } from "../database.js";
 
-const EMBED_COLOR = 0x0099FF;
+const COLORS = {
+    BLUE: 0x0099FF,
+    LIGHT_BLUE: 0x00bcff,
+    GREEN: 0x00ff38
+};
 
-function getWatchEmbed(interaction, courseIndex) {
+function getWatchEmbed(user, courseIndex, watchesUsed) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully added Watch Request!")
-    .setDescription(`Successfully added course ${styleText(courseIndex)} to your watch requests.`)
-    .setFooter({
-        text: interaction.user.username,
-        iconURL: interaction.user.displayAvatarURL()
-    });
+    .setDescription(`Successfully added course ${styleText(courseIndex)} to your watch requests.\n
+                    Currently using ${styleText(`${watchesUsed}/20`)} watches`);
 
-    addExtraStyle(embed);
-
+    addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
 }
 
-function getUnwatchEmbed(interaction, courseIndex) {
+function getUnwatchEmbed(user, courseIndex) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully Removed Course!")
-    .setDescription(`Successfully removed course ${styleText(courseIndex)} from your watch requests.`)
-    .setFooter({
-        text: interaction.user.username,
-        iconURL: interaction.user.displayAvatarURL()
-    });
+    .setDescription(`Successfully removed course ${styleText(courseIndex)} from your watch requests.`);
 
-    addExtraStyle(embed);
-
+    addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
 }
 
-function getCheckEmbed(interaction, watches) {
-    const body = watches.map(courseIndex => {
-        const info = database.getInfoByCourseIndex(courseIndex);
-        return `${styleText(courseIndex)} - Section ${info.section} | ${info.title}`;
-    }).join("\n");
+function getCheckEmbed(user, courses) {
+    const body = courses.map(course => 
+        `${styleText(course.courseIndex)} - Section ${course.section} | ${course.title}`)
+        .join("\n");
 
     const embed = new EmbedBuilder()
     .setTitle("Currently Watching")
-    .setDescription(body)
-    .setFooter({
-        text: interaction.user.username,
-        iconURL: interaction.user.displayAvatarURL()
-    });
+    .setDescription(body);
 
-    addExtraStyle(embed);
-
+    addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
     return embed;
 }
 
-function getClearEmbed() {
+function getClearEmbed(user) {
     const embed = new EmbedBuilder()
     .setTitle("Successful clear!")
     .setDescription("Successfully removed all courses from your watch requests");
 
-    addExtraStyle(embed);
-
+    addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
 }
 
-function getSearchEmbed(info, courseIndex) {
+function getSearchEmbed(user, courseInfo, courseIndex) {
     const embed = new EmbedBuilder()
     .setTitle(`Search results for index ${styleText(courseIndex)}`)
     .addFields(
         {
             name: "Title",
-            value: styleText(info.title),
+            value: styleText(courseInfo.title),
             inline: true
         },
         {
             name: "Course Number",
-            value: styleText(info.course_string),
+            value: styleText(courseInfo.courseString),
             inline: true
         },
         {
             name: "Section",
-            value: styleText(info.section),
+            value: styleText(courseInfo.section),
             inline: true
         }
     );
 
-    addExtraStyle(embed);
-
-    return embed;
-}
-
-function getStatsEmbed(mostWatched) {
-    const body = mostWatched.map(watch => {
-        const info = database.getInfoByCourseIndex(watch.course_index);
-        return `Watches: ${watch.count} - ${styleText(watch.course_index)} - Section ${info.section} | ${info.title}`;
-    }).join("\n");
-
-    const embed = new EmbedBuilder()
-    .setTitle("Top 5 Most Watched Courses")
-    .setDescription(body)
-    .setFooter({
-        text: "FetchRU"
-    });
-
-    addExtraStyle(embed);
-
+    addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
     return embed;
 }
 
@@ -110,7 +78,7 @@ function getNotifyEmbed(courseInfo, courseIndex) {
     .addFields(
         {
             name: "Course Number",
-            value: styleText(courseInfo.course_string),
+            value: styleText(courseInfo.courseString),
             inline: true
         },
         {
@@ -126,31 +94,33 @@ function getNotifyEmbed(courseInfo, courseIndex) {
     )
     .setFooter({
         text: "FetchRU"
-    });
-
-    addExtraStyle(embed);
+    })
+    .setTimestamp()
+    .setColor(COLORS.BLUE);
 
     return embed;
 }
 
-function getRewatchEmbed(interaction, courseIndex) {
+function getRewatchEmbed(user, courseIndex) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully Re-added Watch Request!")
     .setDescription(`Successfully re-added course ${styleText(courseIndex)} to your watch requests.`)
     .setFooter({
-        text: interaction.user.username,
-        iconURL: interaction.user.displayAvatarURL()
+        text: user.username,
+        iconURL: user.displayAvatarURL()
     });
 
-    addExtraStyle(embed);
-
+    addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
 }
 
-function addExtraStyle(embed) {
-    embed
+function addExtraStyle(embed, user, color) {
+    embed.setFooter({
+        text: user.username,
+        iconURL: user.displayAvatarURL()
+    })
     .setTimestamp()
-    .setColor(EMBED_COLOR);
+    .setColor(color);
 }
 
 function styleText(text) {
