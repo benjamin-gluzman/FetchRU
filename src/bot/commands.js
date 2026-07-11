@@ -79,9 +79,7 @@ async function handleWatch(interaction) {
 
     database.addWatch(interaction.user.id, courseIndex);
 
-    await interaction.reply({
-        embeds: [ em.getWatchEmbed(interaction, courseIndex) ]
-    });
+    await reply(interaction, [ em.getWatchEmbed(interaction, courseIndex) ], []);
 }
 
 async function handleUnwatch(interaction) {
@@ -93,9 +91,7 @@ async function handleUnwatch(interaction) {
 
     database.removeWatch(interaction.user.id, courseIndex);
 
-    await interaction.reply({
-        embeds: [ em.getUnwatchEmbed(interaction, courseIndex) ]
-    });
+    await reply(interaction, [ em.getUnwatchEmbed(interaction, courseIndex) ], []);
 }
 
 async function handleCheck(interaction) {
@@ -105,9 +101,7 @@ async function handleCheck(interaction) {
         return;
     }
     
-    await interaction.reply({
-        embeds: [ em.getCheckEmbed(interaction, watches) ]
-    });
+    await reply(interaction, [ em.getCheckEmbed(interaction, watches) ], []);
 }
 
 async function handleClear(interaction) {
@@ -118,9 +112,7 @@ async function handleClear(interaction) {
 
     database.clearWatches(interaction.user.id);
 
-    await interaction.reply({
-        embeds: [ em.getClearEmbed() ]
-    });
+    await reply(interaction, [ em.getClearEmbed() ], []);
 }
 
 async function handleSearch(interaction) {
@@ -132,9 +124,7 @@ async function handleSearch(interaction) {
 
     const info = database.getInfoByCourseIndex(courseIndex);
 
-    await interaction.reply({
-        embeds: [ em.getSearchEmbed(info, courseIndex) ]
-    });
+    await reply(interaction, [ em.getSearchEmbed(info, courseIndex) ], []);
 }
 
 async function handleStats(interaction) {
@@ -143,8 +133,14 @@ async function handleStats(interaction) {
         await interaction.reply("No courses currently being watched");
     }
 
+
+    await reply(interaction, [ em.getStatsEmbed(mostWatched) ], []);
+}
+
+async function reply(interaction, embeds, components) {
     await interaction.reply({
-        embeds: [ em.getStatsEmbed(mostWatched) ]
+        embeds,
+        components
     });
 }
 
