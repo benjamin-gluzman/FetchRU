@@ -44,6 +44,8 @@ const commands = [
         )
 ];
 
+const MAX_WATCHES = 20;
+
 async function handleCommand(interaction) {
     switch(interaction.commandName) {
         case "watch":   handleWatch(interaction); break;
@@ -59,18 +61,34 @@ async function handleCommand(interaction) {
 async function handleWatch(interaction) {
     const courseIndex = interaction.options.getString("index");
     if(!database.isValidCourseIndex(courseIndex)) {
-        await interaction.reply("Course index is invalid");
+        await interaction.reply({
+            embeds: [ em.getInvalidRequestEmbed(interaction.user, {
+                title: "Invalid Request",
+                description: `You must specify a valid index of the course you are trying to snipe\n
+                Valid Usage: /snipe <index>`
+            }) ]
+        });
         return;
     }
 
     const watches = database.getWatches(interaction.user.id), watchesUsed = watches.length;
     if(watches.includes(courseIndex)) {
-        await interaction.reply(`You are already sniping ${courseIndex}`);
+        await interaction.reply({
+            embeds: [ em.getInvalidRequestEmbed(interaction.user, {
+                title: "Invalid Request: Duplicate Index",
+                description: `You are already sniping \`${courseIndex}\``
+            }) ]
+        });
         return;
     }
     
-    if(watchesUsed >= 20) {
-        await interaction.reply("You have no more watches left");
+    if(watchesUsed >= MAX_WATCHES) {
+        await interaction.reply({
+            embeds: [ em.getInvalidRequestEmbed(interaction.user, {
+                title: "Invalid Request",
+                description: `You have no more watches left`
+            }) ]
+        });
         return;
     }
 
@@ -83,22 +101,34 @@ async function handleWatch(interaction) {
 
 async function handleUnwatch(interaction) {
     const courseIndex = interaction.options.getString("index");
-    if(!database.getWatches(interaction.user.id).includes(courseIndex)) {
-        await interaction.reply("Invalid course index");
+    const watches = database.getWatches(interaction.user.id), watchesUsed = watches.length;
+
+    if(!watches.includes(courseIndex)) {
+        await interaction.reply({
+            embeds: [ em.getInvalidRequestEmbed(interaction.user, {
+                title: "Invalid Request",
+                description: `You are not currently watching \`${courseIndex}\``
+            }) ]
+        });
         return;
     }
 
     database.removeWatch(interaction.user.id, courseIndex);
 
     await interaction.reply({
-        embeds: [ em.getUnwatchEmbed(interaction.user, courseIndex) ]
+        embeds: [ em.getUnwatchEmbed(interaction.user, courseIndex, watchesUsed - 1) ]
     });
 }
 
 async function handleCheck(interaction) {
     const watches = database.getWatches(interaction.user.id);
     if(watches.length === 0) {
-        await interaction.reply("Not currently watching any courses");
+        await interaction.reply({
+            embeds: [ em.getInvalidRequestEmbed(interaction.user, {
+                title: "Invalid Request",
+                description: `You are not currently watching any courses`
+            }) ]
+        });
         return;
     }
     
@@ -109,7 +139,12 @@ async function handleCheck(interaction) {
 
 async function handleClear(interaction) {
     if(database.getWatches(interaction.user.id).length === 0) {
-        await interaction.reply("Invalid request: Not currently watching any courses");
+        await interaction.reply({
+            embeds: [ em.getInvalidRequestEmbed(interaction.user, {
+                title: "Invalid Request",
+                description: `You are not currently watching any courses`
+            }) ]
+        });
         return;
     }
 
@@ -124,7 +159,13 @@ async function handleSearch(interaction) {
     const courseString = interaction.options.getString("number");
 
     if(!database.isValidCourseString(courseString)) {
-        await interaction.reply("Course number is invalid");
+        await interaction.reply({
+            embeds: [ em.getInvalidRequestEmbed(interaction.user, {
+                title: "Invalid Request",
+                description: `You must specify a valid course number\n
+                Valid Usage: /search <course number>`
+            }) ]
+        });
         return;
     }
 
@@ -139,3 +180,4 @@ async function handleSearch(interaction) {
 
 
 export { commands, handleCommand };
+export { MAX_WATCHES };

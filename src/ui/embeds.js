@@ -1,25 +1,28 @@
 import { EmbedBuilder } from "discord.js";
+import { MAX_WATCHES } from "../bot/commands.js";
 
 const COLORS = {
     BLUE: 0x0099FF,
-    LIGHT_BLUE: 0x00bcff,
-    GREEN: 0x00ff38
+    LIGHT_BLUE: 0x00BCFF,
+    GREEN: 0x00FF38,
+    RED: 0xFF0000,
 };
 
 function getWatchEmbed(user, courseIndex, watchesUsed) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully added Watch Request!")
     .setDescription(`Successfully added course ${styleText(courseIndex)} to your watch requests.\n
-                    Currently using ${styleText(`${watchesUsed}/20`)} watches`);
+                    Currently using ${styleText(`${watchesUsed}/${MAX_WATCHES}`)} watches`);
 
     addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
 }
 
-function getUnwatchEmbed(user, courseIndex) {
+function getUnwatchEmbed(user, courseIndex, watchesUsed) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully Removed Course!")
-    .setDescription(`Successfully removed course ${styleText(courseIndex)} from your watch requests.`);
+    .setDescription(`Successfully removed course ${styleText(courseIndex)} from your watch requests.\n
+                    Currently using ${styleText(`${watchesUsed}/${MAX_WATCHES}`)} watches`);
 
     addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
@@ -112,6 +115,15 @@ function getRewatchEmbed(user, courseIndex) {
     return embed;
 }
 
+function getInvalidRequestEmbed(user, message) {
+    const embed = new EmbedBuilder()
+    .setTitle(message.title)
+    .setDescription(message.description);
+
+    addExtraStyle(embed, user, COLORS.RED);
+    return embed;
+}
+
 function addExtraStyle(embed, user, color) {
     embed.setFooter({
         text: user.username,
@@ -132,6 +144,7 @@ export const em = {
     getClearEmbed,
     getSearchEmbed,
     getRewatchEmbed,
+    getInvalidRequestEmbed,
 };
 
 export { getNotifyEmbed };
