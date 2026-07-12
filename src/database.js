@@ -6,17 +6,31 @@ db.exec("PRAGMA foreign_keys = ON;");
 // Create all tables
 db.exec(`
 CREATE TABLE IF NOT EXISTS courses (
-   id INTEGER PRIMARY KEY AUTOINCREMENT,
-   title TEXT,
-   course_string TEXT UNIQUE
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    campus TEXT,
+    title TEXT,
+    course_string TEXT UNIQUE,
+    credits FLOAT
 );
 
 CREATE TABLE IF NOT EXISTS sections (
-   course_index TEXT PRIMARY KEY,
-   course_id INTEGER NOT NULL,
-   section TEXT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER NOT NULL,
+    course_index TEXT UNIQUE,
+    section TEXT,
 
-   FOREIGN KEY (course_id) REFERENCES courses(id)
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);
+
+CREATE TABLE IF NOT EXISTS meeting_times (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    section_id INTEGER UNIQUE NOT NULL,
+    campus_name TEXT,
+    day TEXT,
+    start_time TEXT,
+    end_time TEXT,
+
+    FOREIGN KEY (section_id) REFERENCES sections(id)
 );
 
 CREATE TABLE IF NOT EXISTS watches (
@@ -53,24 +67,7 @@ const _getUsers = db.prepare(`
     FROM watches
     WHERE course_index = ? 
 `);
- 
-const _upsertCourse = db.prepare(`
-    INSERT INTO courses (title, course_string)
-    VALUES (?, ?)
-    ON CONFLICT (course_string)
-    DO UPDATE 
-        SET title = excluded.title
-    RETURNING id
-`);
 
-const _upsertSection = db.prepare(`
-    INSERT INTO sections (course_index, course_id, section)
-    VALUES (?, ?, ?)
-    ON CONFLICT (course_index)
-    DO UPDATE
-        SET course_index = excluded.course_index,
-            section      = excluded.section
-`);
 
 
 const _isValidCourseIndex = db.prepare(`
@@ -109,6 +106,40 @@ const _getMostWatchedCourses = db.prepare(`
 `);
 
 
+// Upserts
+const _upsertCourse = db.prepare(`
+    INSERT INTO courses (campus, title, course_string, credits)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT (course_string)
+    DO UPDATE 
+        SET campus = excluded.campus,
+            title = excluded.title,
+            credits = excluded.credits
+    RETURNING id
+`);
+
+const _upsertSection = db.prepare(`
+    INSERT INTO sections (course_id, course_index, section)
+    VALUES (?, ?, ?)
+    ON CONFLICT (course_index)
+    DO UPDATE
+        SET course_index = excluded.course_index,
+            section      = excluded.section
+    RETURNING id
+`);
+
+const _upsertMeetingTime = db.prepare(`
+    INSERT INTO meeting_times (section_id, campus_name, day, start_time, end_time)
+    VALUES (?, ?, ?, ?, ?)
+    ON CONFLICT (section_id)
+    DO UPDATE
+        SET campus_name = excluded.campus_name,
+            day = excluded.day,
+            start_time = excluded.start_time,
+            end_time = excluded.end_time
+`);
+
+
 
 
 // Wrap 'private' SQL statements in public functions
@@ -134,10 +165,14 @@ function getUsers(course_index) {
 
 const importCourseInfo = db.transaction(courses => {
     for(const course of courses) {
-        const id = _upsertCourse.get(course.title, course.courseString).id;
+        const course_id = _upsertCourse.get(course.campus, course.title, course.courseString, course.credits).id;
 
         for(const section of course.sections) {
-            _upsertSection.run(section.index, id, section.number);
+            const section_id = _upsertSection.get(course_id, section.courseIndex, section.number).id;
+        
+            for(const meet of section.meetingTimes) {
+                _upsertMeetingTime.run(section_id, meet.campusName, meet.day, meet.startTime, meet.endTime);
+            }
         }
     }
 });

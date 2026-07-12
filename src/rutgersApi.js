@@ -4,36 +4,63 @@ const TERMS = {
     FALL: 9
 }
 
-const OPEN_COURSES_URL = `https://classes.rutgers.edu/soc/api/openSections.json?year=2026&term=${TERMS.FALL}&campus=NB`;
-const COURSE_INFO_URL = `https://classes.rutgers.edu/soc/api/courses.json?year=2026&term=${TERMS.FALL}&campus=NB`;
+const CAMPUSES = {
+    NEW_BRUNSWICK: "NB",
+    CAMDEN: "CM",
+    NEWARK: "NK"
+};
+
+const OPEN_COURSES_URL = (year, term, campus) => 
+    `https://classes.rutgers.edu/soc/api/openSections.json?year=${year}&term=${term}&campus=${campus}`;
+
+const COURSE_INFO_URL = (year, term, campus) => 
+    `https://classes.rutgers.edu/soc/api/courses.json?year=${year}&term=${term}&campus=${campus}`;
 
 async function getOpenCourses() {
-    const response = await fetch(OPEN_COURSES_URL);
-    if(!response.ok) {
+    const year = 2026, term = TERMS.FALL;
+
+    const resNB = await fetch(OPEN_COURSES_URL(year, term, CAMPUSES.NEW_BRUNSWICK)),
+          resCM = await fetch(OPEN_COURSES_URL(year, term, CAMPUSES.CAMDEN)),
+          resNK = await fetch(OPEN_COURSES_URL(year, term, CAMPUSES.NEWARK));
+
+    if(!resNB.ok || !resCM.ok || !resNK.ok) {
         console.log("getOpenCourses() fetch() failed");
         return;
     }
 
-    const openCourses = await response.json();
+    const openCourses = [...(await resNB.json()), ...(await resCM.json()), ...(await resNK.json())];
 
     return openCourses;
 }
 
 async function getCourseInfo() {
-    const response = await fetch(COURSE_INFO_URL);
-    if(!response.ok) {
+    const year = 2026, term = TERMS.FALL;
+
+    const resNB = await fetch(COURSE_INFO_URL(year, term, CAMPUSES.NEW_BRUNSWICK)),
+          resCM = await fetch(COURSE_INFO_URL(year, term, CAMPUSES.CAMDEN)),
+          resNK = await fetch(COURSE_INFO_URL(year, term, CAMPUSES.NEWARK));
+
+    if(!resNB.ok || !resCM.ok || !resNK.ok) {
         console.log("getCourseInfo() fetch() failed");
         return;
     }
 
-    const courseInfo = await response.json();
+    const courseInfo = [...(await resNB.json()), ...(await resCM.json()), ...(await resNK.json())];
 
     return courseInfo.map(course => ({
+            campus: course.campusCode,
             title: course.title,
             courseString: course.courseString,
+            credits: course.credits,
             sections: course.sections.map(section => ({
-                index: section.index,
-                number: section.number
+                courseIndex: section.index,
+                number: section.number,
+                meetingTimes: section.meetingTimes.map(meet => ({
+                    campusName: meet.campusName || "N/A",
+                    day: meet.meetingDay || "N/A",
+                    startTime: meet.startTime || "N/A",
+                    endTime: meet.endTime || "N/A",
+                }))
             }))
         }));
 }
