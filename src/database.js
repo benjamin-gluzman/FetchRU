@@ -24,9 +24,10 @@ CREATE TABLE IF NOT EXISTS sections (
 
 CREATE TABLE IF NOT EXISTS meeting_times (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    section_id INTEGER UNIQUE NOT NULL,
+    section_id INTEGER NOT NULL,
     campus_name TEXT,
     day TEXT,
+    time_of_day TEXT,
     start_time TEXT,
     end_time TEXT,
 
@@ -75,34 +76,21 @@ const _isValidCourseIndex = db.prepare(`
 `);
 
 const _getInfoByCourseIndex = db.prepare(`
-    SELECT title, course_string AS courseString, section, course_index AS courseIndex
+    SELECT campus, title, course_string AS courseString, credits, section, course_index AS courseIndex
     FROM sections
     INNER JOIN courses
     ON sections.course_id = courses.id
     WHERE sections.course_index = ?
 `);
 
-const _isValidCourseString = db.prepare(`
-    SELECT EXISTS(SELECT 1 FROM courses WHERE course_string = ?) AS valid
+const _getMeetingTimeByCourseIndex = db.prepare(`
+    SELECT campus_name AS campusName, day, time_of_day AS timeOfDay, start_time AS startTime, end_time AS endTime
+    FROM meeting_times
+    WHERE section_id = (SELECT id FROM sections WHERE course_index = ?)
 `);
 
-const _getInfoByCourseString = db.prepare(`
-    SELECT title, course_string AS courseString
-    FROM courses
-    WHERE course_string = ?
-`);
-
-const _getSectionInfoByCourseString = db.prepare(`
-    SELECT course_index AS courseIndex, section
-    FROM sections
-    WHERE course_id = (SELECT id FROM courses WHERE course_string = ?)
-`);
-
-const _getMostWatchedCourses = db.prepare(`
-    SELECT course_index AS courseIndex, COUNT(user_id) AS count
-    FROM watches
-    GROUP BY course_index
-    ORDER BY count DESC LIMIT 5
+const _clearMeetingTimes = db.prepare(`
+    DELETE FROM meeting_times
 `);
 
 
@@ -128,15 +116,9 @@ const _upsertSection = db.prepare(`
     RETURNING id
 `);
 
-const _upsertMeetingTime = db.prepare(`
-    INSERT INTO meeting_times (section_id, campus_name, day, start_time, end_time)
-    VALUES (?, ?, ?, ?, ?)
-    ON CONFLICT (section_id)
-    DO UPDATE
-        SET campus_name = excluded.campus_name,
-            day = excluded.day,
-            start_time = excluded.start_time,
-            end_time = excluded.end_time
+const _insertMeetingTime = db.prepare(`
+    INSERT INTO meeting_times (section_id, campus_name, day, time_of_day, start_time, end_time)
+    VALUES (?, ?, ?, ?, ?, ?)
 `);
 
 
@@ -164,6 +146,8 @@ function getUsers(course_index) {
 }
 
 const importCourseInfo = db.transaction(courses => {
+    _clearMeetingTimes.run();
+
     for(const course of courses) {
         const course_id = _upsertCourse.get(course.campus, course.title, course.courseString, course.credits).id;
 
@@ -171,7 +155,7 @@ const importCourseInfo = db.transaction(courses => {
             const section_id = _upsertSection.get(course_id, section.courseIndex, section.number).id;
         
             for(const meet of section.meetingTimes) {
-                _upsertMeetingTime.run(section_id, meet.campusName, meet.day, meet.startTime, meet.endTime);
+                _insertMeetingTime.run(section_id, meet.campusName, meet.day, meet.timeOfDay, meet.startTime, meet.endTime);
             }
         }
     }
@@ -185,22 +169,9 @@ function getInfoByCourseIndex(course_index) {
     return _getInfoByCourseIndex.get(course_index);
 }
 
-function isValidCourseString(course_string) {
-    return _isValidCourseString.get(course_string).valid;
+function getMeetingTimeByCourseIndex(course_index) {
+    return _getMeetingTimeByCourseIndex.all(course_index);
 }
-
-function getInfoByCourseString(course_string) {
-    return _getInfoByCourseString.get(course_string);
-}
-
-function getSectionInfoByCourseString(course_string) {
-    return _getSectionInfoByCourseString.all(course_string);
-}
-
-function getMostWatchedCourses() {
-    return _getMostWatchedCourses.all();
-}
-
 
 
 export const database = {
@@ -212,8 +183,5 @@ export const database = {
     importCourseInfo,
     isValidCourseIndex,
     getInfoByCourseIndex,
-    isValidCourseString,
-    getInfoByCourseString,
-    getSectionInfoByCourseString,
-    getMostWatchedCourses,
+    getMeetingTimeByCourseIndex,
 };

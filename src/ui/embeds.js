@@ -11,8 +11,8 @@ const COLORS = {
 function getWatchEmbed(user, courseIndex, watchesUsed) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully added Watch Request!")
-    .setDescription(`Successfully added course ${styleText(courseIndex)} to your watch requests.\n
-                    Currently using ${styleText(`${watchesUsed}/${MAX_WATCHES}`)} watches`);
+    .setDescription(`Successfully added course ${codeText(courseIndex)} to your watch requests.\n
+                    Currently using ${codeText(`${watchesUsed}/${MAX_WATCHES}`)} watches`);
 
     addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
@@ -21,21 +21,21 @@ function getWatchEmbed(user, courseIndex, watchesUsed) {
 function getUnwatchEmbed(user, courseIndex, watchesUsed) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully Removed Course!")
-    .setDescription(`Successfully removed course ${styleText(courseIndex)} from your watch requests.\n
-                    Currently using ${styleText(`${watchesUsed}/${MAX_WATCHES}`)} watches`);
+    .setDescription(`Successfully removed course ${codeText(courseIndex)} from your watch requests.\n
+                    Currently using ${codeText(`${watchesUsed}/${MAX_WATCHES}`)} watches`);
 
     addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
 }
 
 function getCheckEmbed(user, courses) {
-    const body = courses.map(course => 
-        `${styleText(course.courseIndex)} - Section ${course.section} | ${course.title}`)
+    const description = courses.map(course => 
+        `${codeText(course.courseIndex)} - Section ${course.section} | ${course.title}`)
         .join("\n");
 
     const embed = new EmbedBuilder()
     .setTitle("Currently Watching")
-    .setDescription(body);
+    .setDescription(description);
 
     addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
     return embed;
@@ -50,26 +50,28 @@ function getClearEmbed(user) {
     return embed;
 }
 
-function getSearchEmbed(user, courseInfo, sectionInfo, currPage) {
+function getSearchEmbed(user, courseInfo, meetingTime) {
+    const description = meetingTime.map(meet => 
+        `> ${formatTime(meet.day, meet.startTime, meet.endTime, meet.timeOfDay)} ◾ **${meet.campusName}**`)
+        .join("\n");
+
     const embed = new EmbedBuilder()
-    .setTitle(`Search results for:\n${courseInfo.courseString} (${courseInfo.title})`)
+    .setTitle(`\n${courseInfo.title} (${courseInfo.courseString})`)
+    .setDescription(`**📌 Section Meeting Times**\n${description}`)
     .addFields(
         {
             name: "Section",
-            value: styleText(sectionInfo[currPage].section),
+            value: codeText(courseInfo.section),
             inline: true
         },
         {
             name: "Index",
-            value: styleText(sectionInfo[currPage].courseIndex),
+            value: codeText(courseInfo.courseIndex),
             inline: true
         }
     )
-    .setFooter({
-        text: `Page ${+currPage + 1}/${sectionInfo.length}`
-    })
 
-    // addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
+    addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
     return embed;
 }
 
@@ -79,17 +81,17 @@ function getNotifyEmbed(courseInfo, courseIndex) {
     .addFields(
         {
             name: "Course Number",
-            value: styleText(courseInfo.courseString),
+            value: codeText(courseInfo.courseString),
             inline: true
         },
         {
             name: "Index",
-            value: styleText(courseIndex),
+            value: codeText(courseIndex),
             inline: true
         },
         {
             name: "Section",
-            value: styleText(courseInfo.section),
+            value: codeText(courseInfo.section),
             inline: true
         }
     )
@@ -105,7 +107,7 @@ function getNotifyEmbed(courseInfo, courseIndex) {
 function getRewatchEmbed(user, courseIndex) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully Re-added Watch Request!")
-    .setDescription(`Successfully re-added course ${styleText(courseIndex)} to your watch requests.`)
+    .setDescription(`Successfully re-added course ${codeText(courseIndex)} to your watch requests.`)
     .setFooter({
         text: user.username,
         iconURL: user.displayAvatarURL()
@@ -124,6 +126,20 @@ function getInvalidRequestEmbed(user, message) {
     return embed;
 }
 
+function formatTime(day, startTime, endTime, timeOfDay) {
+    if(day === "N/A" || startTime === "N/A" || endTime === "N/A") return "";
+
+    switch(day) {
+        case "M": day = "Mon"; break;
+        case "T": day = "Tue"; break;
+        case "W": day = "Wed"; break;
+        case "H": day = "Thu"; break;
+        case "F": day = "Fri"; break;
+    }
+
+    return `${day} ${startTime.slice(0, 2)}:${startTime.slice(2, 4)}${timeOfDay}M - ${endTime.slice(0, 2)}:${endTime.slice(2, 4)}${timeOfDay}M`;
+}
+
 function addExtraStyle(embed, user, color) {
     embed.setFooter({
         text: user.username,
@@ -133,7 +149,7 @@ function addExtraStyle(embed, user, color) {
     .setColor(color);
 }
 
-function styleText(text) {
+function codeText(text) {
     return `\`${text}\``;
 }
 

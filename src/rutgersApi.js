@@ -58,6 +58,7 @@ async function getCourseInfo() {
                 meetingTimes: section.meetingTimes.map(meet => ({
                     campusName: meet.campusName || "N/A",
                     day: meet.meetingDay || "N/A",
+                    timeOfDay: meet.pmCode  || "N/A",
                     startTime: meet.startTime || "N/A",
                     endTime: meet.endTime || "N/A",
                 }))

@@ -1,7 +1,6 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
 import { database } from "../database.js";
 import { em } from "../ui/embeds.js";
-import { cm } from "../ui/components.js";
 
 
 const commands = [
@@ -35,11 +34,11 @@ const commands = [
 
     new SlashCommandBuilder()
         .setName("search")
-        .setDescription("Search for course indices by the course number")
+        .setDescription("Lookup information for a specific course index")
         .addStringOption(option =>
             option
-                .setName("number")
-                .setDescription("Course number")
+                .setName("index")
+                .setDescription("Course index")
                 .setRequired(true)
         )
 ];
@@ -156,25 +155,24 @@ async function handleClear(interaction) {
 }
 
 async function handleSearch(interaction) {
-    const courseString = interaction.options.getString("number");
+    const courseIndex = interaction.options.getString("index");
 
-    if(!database.isValidCourseString(courseString)) {
+    if(!database.isValidCourseIndex(courseIndex)) {
         await interaction.reply({
             embeds: [ em.getInvalidRequestEmbed(interaction.user, {
                 title: "Invalid Request",
-                description: `You must specify a valid course number\n
-                Valid Usage: /search <course number>`
+                description: `You must specify a valid index of the course you are trying to search\n
+                Valid Usage: /search <index>`
             }) ]
         });
         return;
     }
 
-    const courseInfo = database.getInfoByCourseString(courseString),
-        sectionInfo = database.getSectionInfoByCourseString(courseString);
+    const courseInfo = database.getInfoByCourseIndex(courseIndex),
+        meetingTime = database.getMeetingTimeByCourseIndex(courseIndex);
 
     await interaction.reply({
-        embeds: [ em.getSearchEmbed(interaction.user, courseInfo, sectionInfo, 0) ],
-        components: [ cm.getSearchComponent(courseString, 0, sectionInfo.length) ]
+        embeds: [ em.getSearchEmbed(interaction.user, courseInfo, meetingTime) ]
     });
 }
 
