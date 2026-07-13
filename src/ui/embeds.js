@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import { MAX_WATCHES } from "../bot/commands.js";
+import { MAX_WATCHES, INVALID_REQUESTS } from "../bot/commands.js";
 
 const COLORS = {
     BLUE: 0x0099FF,
@@ -29,12 +29,20 @@ function getUnwatchEmbed(user, courseIndex, watchesUsed) {
 }
 
 function getCheckEmbed(user, courses) {
-    const description = courses.map(course => 
-        `${codeText(course.courseIndex)} - Section ${course.section} | ${course.title}`)
-        .join("\n");
-
+    let title, description;
+    if(courses.length === 0) {
+        title = "Not Watching any Courses";
+        description = "To start watching a course, use /watch <index>";
+    }
+    else {
+        title = "Currently Watching";
+        description = courses.map(course => 
+            `${codeText(course.courseIndex)} - Section ${course.section} | ${course.title}`)
+            .join("\n");
+    }
+    
     const embed = new EmbedBuilder()
-    .setTitle("Currently Watching")
+    .setTitle(title)
     .setDescription(description);
 
     addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
@@ -117,10 +125,35 @@ function getRewatchEmbed(user, courseIndex) {
     return embed;
 }
 
-function getInvalidRequestEmbed(user, message) {
+function getInvalidRequestEmbed(user, code) {
+    let description;
+    switch(code) {
+        case INVALID_REQUESTS.WATCH:
+            description = `You must specify a valid index of the course you are trying to snipe.\n
+            Valid Usage: /watch <index>`;
+            break;
+        case INVALID_REQUESTS.UNWATCH:
+            description = `You are not currently watching this course.\n
+            Please use /unwatch with a course index you are currently watching.`
+            break;
+        case INVALID_REQUESTS.CLEAR:
+            description = `You are not currently watching any courses.`
+            break;
+        case INVALID_REQUESTS.SEARCH:
+            description = `You must specify a valid index of the course you are trying to search.\n
+            Valid Usage: /search <index>`
+            break;
+        case INVALID_REQUESTS.DUPLICATE_INDEX:
+            description = `You are already watching this course.`
+            break;
+        case INVALID_REQUESTS.NO_MORE_WATCHES:
+            description = `You have no more watches left.`
+            break;
+    }
+
     const embed = new EmbedBuilder()
-    .setTitle(message.title)
-    .setDescription(message.description);
+    .setTitle("Invalid Request")
+    .setDescription(description);
 
     addExtraStyle(embed, user, COLORS.RED);
     return embed;
