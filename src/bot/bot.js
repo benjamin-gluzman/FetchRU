@@ -1,6 +1,7 @@
 import { Client, Events, GatewayIntentBits, REST, Routes } from "discord.js";
 import { commands, handleCommand } from "./commands.js";
 import { handleInteraction } from "./interactions.js";
+import { handleAutocomplete } from "./autocomplete.js";
 import dotenv from 'dotenv';
 
 dotenv.config({ path: "./.env" });
@@ -31,10 +32,11 @@ async function startBot() {
         console.log(`Tag: ${client.user.tag}`);
     });
 
-    // Respond to slash commands
     client.on("interactionCreate", async (interaction) => {
         if(interaction.isChatInputCommand())
             await handleCommand(interaction); // Handles slash commands
+        else if(interaction.isAutocomplete())
+            await handleAutocomplete(interaction) // Handles autocomplete for commands
         else
             await handleInteraction(interaction); // Handles component interactions
     });

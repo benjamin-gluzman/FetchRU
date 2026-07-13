@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, MessageFlags } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import { database } from "../database.js";
 import { em } from "../ui/embeds.js";
 
@@ -22,6 +22,7 @@ const commands = [
                 .setName("index")
                 .setDescription("Course index")
                 .setRequired(true)
+                .setAutocomplete(true)
         ),
     
     new SlashCommandBuilder()
@@ -40,6 +41,7 @@ const commands = [
                 .setName("index")
                 .setDescription("Course index")
                 .setRequired(true)
+                .setAutocomplete(true)
         )
 ];
 
