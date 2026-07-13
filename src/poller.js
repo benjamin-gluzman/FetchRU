@@ -30,7 +30,7 @@ async function notifyUser(user, courseIndex) {
     const courseInfo = database.getInfoByCourseIndex(courseIndex);
 
     await user.send({
-        embeds: [ getNotifyEmbed(courseInfo, courseIndex) ],
+        embeds: [ getNotifyEmbed(user, courseInfo, courseIndex) ],
         components: [ getNotifyComponent(courseIndex) ]
     });
 }

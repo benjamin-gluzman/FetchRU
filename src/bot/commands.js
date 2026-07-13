@@ -121,7 +121,9 @@ async function handleCheck(interaction) {
     const watches = database.getWatches(interaction.user.id);
     
     await interaction.reply({
-        embeds: [ em.getCheckEmbed(interaction.user, watches.map(courseIndex => database.getInfoByCourseIndex(courseIndex))) ]
+        embeds: [ em.getCheckEmbed(interaction.user, 
+            watches.map(courseIndex => database.getInfoByCourseIndex(courseIndex)), 
+            watches.length) ]
     });
 }
 

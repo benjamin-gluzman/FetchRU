@@ -3,7 +3,6 @@ import { MAX_WATCHES, INVALID_REQUESTS } from "../bot/commands.js";
 
 const COLORS = {
     BLUE: 0x0099FF,
-    LIGHT_BLUE: 0x00BCFF,
     GREEN: 0x00FF38,
     RED: 0xFF0000,
 };
@@ -28,7 +27,7 @@ function getUnwatchEmbed(user, courseIndex, watchesUsed) {
     return embed;
 }
 
-function getCheckEmbed(user, courses) {
+function getCheckEmbed(user, courses, watchesUsed) {
     let title, description;
     if(courses.length === 0) {
         title = "Not Watching any Courses";
@@ -37,15 +36,15 @@ function getCheckEmbed(user, courses) {
     else {
         title = "Currently Watching";
         description = courses.map(course => 
-            `${codeText(course.courseIndex)} - Section ${course.section} | ${course.title}`)
-            .join("\n");
+            `${codeText(course.courseIndex)} - ${course.title} (${course.courseString}:${course.section})`)
+            .join("\n") + `\n\nCurrently using ${codeText(`${watchesUsed}/${MAX_WATCHES}`)} watches`;
     }
     
     const embed = new EmbedBuilder()
     .setTitle(title)
     .setDescription(description);
 
-    addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
+    addExtraStyle(embed, user, COLORS.BLUE);
     return embed;
 }
 
@@ -79,11 +78,11 @@ function getSearchEmbed(user, courseInfo, meetingTime) {
         }
     )
 
-    addExtraStyle(embed, user, COLORS.LIGHT_BLUE);
+    addExtraStyle(embed, user, COLORS.BLUE);
     return embed;
 }
 
-function getNotifyEmbed(courseInfo, courseIndex) {
+function getNotifyEmbed(user, courseInfo, courseIndex) {
     const embed = new EmbedBuilder()
     .setTitle(`${courseInfo.title} (${courseIndex}) has opened!`)
     .addFields(
@@ -103,23 +102,15 @@ function getNotifyEmbed(courseInfo, courseIndex) {
             inline: true
         }
     )
-    .setFooter({
-        text: "FetchRU"
-    })
-    .setTimestamp()
-    .setColor(COLORS.BLUE);
 
+    addExtraStyle(embed, user, COLORS.RED);
     return embed;
 }
 
 function getRewatchEmbed(user, courseIndex) {
     const embed = new EmbedBuilder()
     .setTitle("Successfully Re-added Watch Request!")
-    .setDescription(`Successfully re-added course ${codeText(courseIndex)} to your watch requests.`)
-    .setFooter({
-        text: user.username,
-        iconURL: user.displayAvatarURL()
-    });
+    .setDescription(`Successfully re-added course ${codeText(courseIndex)} to your watch requests.`);
 
     addExtraStyle(embed, user, COLORS.GREEN);
     return embed;
@@ -178,6 +169,7 @@ function addExtraStyle(embed, user, color) {
         text: user.username,
         iconURL: user.displayAvatarURL()
     })
+    .setThumbnail(user.displayAvatarURL())
     .setTimestamp()
     .setColor(color);
 }
