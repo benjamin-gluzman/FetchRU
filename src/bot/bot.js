@@ -7,6 +7,9 @@ import dotenv from 'dotenv';
 dotenv.config({ path: "./.env" });
 const BOT_TOKEN = process.env.BOT_TOKEN, CLIENT_ID = process.env.CLIENT_ID;
 
+const commandIds = new Map((await registerCommands())
+    .map(cmd => [cmd.name, cmd.id]));
+
 const client = new Client({    
     intents: [
         GatewayIntentBits.Guilds,
@@ -14,17 +17,6 @@ const client = new Client({
         GatewayIntentBits.MessageContent
     ]
 });
-
-const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
-
-async function registerCommands() {
-    await rest.put(
-        Routes.applicationCommands(CLIENT_ID),
-        { body: commands }
-    );
-
-    console.log('commands registered');
-}
 
 async function startBot() {
     client.on("clientReady", () => {
@@ -41,9 +33,17 @@ async function startBot() {
             await handleInteraction(interaction); // Handles component interactions
     });
 
-    await registerCommands();
     await client.login(BOT_TOKEN);
 }
 
+async function registerCommands() {
+    const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
 
-export {startBot, client};
+    return await rest.put(
+        Routes.applicationCommands(CLIENT_ID),
+        { body: commands }
+    );
+}
+
+
+export {startBot, client, commandIds};

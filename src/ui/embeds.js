@@ -1,5 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { MAX_WATCHES, INVALID_REQUESTS } from "../bot/commands.js";
+import { commandIds } from "../bot/bot.js";
 
 const COLORS = {
     BLUE: 0x0099FF,
@@ -31,7 +32,7 @@ function getCheckEmbed(user, courses, watchesUsed) {
     let title, description;
     if(courses.length === 0) {
         title = "Not Watching any Courses";
-        description = "To start watching a course, use /watch <index>";
+        description = `To start watching a course, use </watch:${commandIds.get(`watch`)}> <index>`;
     }
     else {
         title = "Currently Watching";
@@ -82,6 +83,21 @@ function getSearchEmbed(user, courseInfo, meetingTime) {
     return embed;
 }
 
+function getHelpEmbed(user) {
+    const embed = new EmbedBuilder()
+    .setTitle("Commands")
+    .setDescription(`
+    </watch:${commandIds.get(`watch`)}> starts watching a course index\n
+    </unwatch:${commandIds.get(`unwatch`)}> stops watching a course index\n
+    </check:${commandIds.get(`check`)}> lists all courses you are currently watching\n
+    </clear:${commandIds.get(`clear`)}> clears all courses you are currently watching\n
+    </search:${commandIds.get(`search`)}> looks up extra info about a specific course index\n
+    `);
+
+    addExtraStyle(embed, user, COLORS.BLUE);
+    return embed;
+}
+
 function getNotifyEmbed(user, courseInfo, courseIndex) {
     const embed = new EmbedBuilder()
     .setTitle(`${courseInfo.title} (${courseIndex}) has opened!`)
@@ -121,24 +137,26 @@ function getInvalidRequestEmbed(user, code) {
     switch(code) {
         case INVALID_REQUESTS.WATCH:
             description = `You must specify a valid index of the course you are trying to snipe.\n
-            Valid Usage: /watch <index>`;
+            Valid Usage: </watch:${commandIds.get(`watch`)}> <index>`;
             break;
         case INVALID_REQUESTS.UNWATCH:
             description = `You are not currently watching this course.\n
-            Please use /unwatch with a course index you are currently watching.`
+            Please use </unwatch:${commandIds.get(`unwatch`)}> with a course index you are currently watching.`
             break;
         case INVALID_REQUESTS.CLEAR:
-            description = `You are not currently watching any courses.`
+            description = `You are not currently watching any courses.\n
+            Start watching a course using </watch:${commandIds.get(`watch`)}> <index>`
             break;
         case INVALID_REQUESTS.SEARCH:
             description = `You must specify a valid index of the course you are trying to search.\n
-            Valid Usage: /search <index>`
+            Valid Usage: </search:${commandIds.get(`search`)}> <index>`
             break;
         case INVALID_REQUESTS.DUPLICATE_INDEX:
             description = `You are already watching this course.`
             break;
         case INVALID_REQUESTS.NO_MORE_WATCHES:
-            description = `You have no more watches left.`
+            description = `You have no more watches left.\n
+            Use </unwatch:${commandIds.get(`unwatch`)}> or ${commandIds.get(`clear`)} to make room.`
             break;
     }
 
@@ -184,6 +202,7 @@ export const em = {
     getCheckEmbed,
     getClearEmbed,
     getSearchEmbed,
+    getHelpEmbed,
     getRewatchEmbed,
     getInvalidRequestEmbed,
 };

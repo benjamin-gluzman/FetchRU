@@ -42,7 +42,11 @@ const commands = [
                 .setDescription("Course index")
                 .setRequired(true)
                 .setAutocomplete(true)
-        )
+        ),
+    
+    new SlashCommandBuilder()
+        .setName("help")
+        .setDescription("View how to use each command")
 ];
 
 const MAX_WATCHES = 20;
@@ -63,7 +67,7 @@ async function handleCommand(interaction) {
         case "check":   handleCheck(interaction); break;
         case "clear":   handleClear(interaction); break;
         case "search":  handleSearch(interaction); break;
-        case "stats":   handleStats(interaction); break;
+        case "help":    handleHelp(interaction); break;
     }
 }
 
@@ -157,6 +161,12 @@ async function handleSearch(interaction) {
 
     await interaction.reply({
         embeds: [ em.getSearchEmbed(interaction.user, courseInfo, meetingTime) ]
+    });
+}
+
+async function handleHelp(interaction) {
+    await interaction.reply({
+        embeds: [ em.getHelpEmbed(interaction.user) ]
     });
 }
 
