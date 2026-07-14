@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { MAX_WATCHES, INVALID_REQUESTS } from "../bot/commands.js";
-import { commandIds } from "../bot/bot.js";
+import { client, commandIds } from "../bot/bot.js";
 
 const COLORS = {
     BLUE: 0x0099FF,
@@ -187,7 +187,7 @@ function addExtraStyle(embed, user, color) {
         text: user.username,
         iconURL: user.displayAvatarURL()
     })
-    .setThumbnail(user.displayAvatarURL())
+    .setThumbnail(client.user.displayAvatarURL())
     .setTimestamp()
     .setColor(color);
 }

@@ -38,11 +38,13 @@ async function startBot() {
 
 async function registerCommands() {
     const rest = new REST({ version: '10' }).setToken(BOT_TOKEN);
-
-    return await rest.put(
+    const cmds = await rest.put(
         Routes.applicationCommands(CLIENT_ID),
         { body: commands }
     );
+
+    console.log("commands registered!");
+    return cmds;
 }
 
 
