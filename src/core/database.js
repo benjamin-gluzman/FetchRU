@@ -1,4 +1,5 @@
 import Database from "better-sqlite3";
+import path from "path";
 
 const db = new Database("FetchRU.db");
 db.exec("PRAGMA foreign_keys = ON;");

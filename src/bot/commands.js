@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { database } from "../database.js";
+import { database } from "../core/database.js";
 import { em } from "../ui/embeds.js";
 
 

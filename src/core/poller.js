@@ -1,8 +1,8 @@
-import { getOpenCourses } from "./rutgersApi.js";
+import { getOpenCourses } from "../shared/rutgersApi.js";
 import { database } from "./database.js";
-import { getNotifyEmbed } from "./ui/embeds.js";
-import { getNotifyComponent } from "./ui/components.js";
-import { client } from "./bot/bot.js";
+import { getNotifyEmbed } from "../ui/embeds.js";
+import { getNotifyComponent } from "../ui/components.js";
+import { client } from "../bot/bot.js";
 
 const FETCH_INTERVAL = 5000;
 

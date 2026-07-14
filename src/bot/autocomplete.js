@@ -1,4 +1,4 @@
-import { database } from "../database.js";
+import { database } from "../core/database.js";
 
 const MAX_CHOICES = 25;
 

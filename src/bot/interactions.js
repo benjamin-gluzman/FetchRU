@@ -1,4 +1,4 @@
-import { database } from "../database.js";
+import { database } from "../core/database.js";
 import { em } from "../ui/embeds.js";
 
 async function handleInteraction(interaction) {
