@@ -10,42 +10,82 @@ const CAMPUSES = {
     NEWARK: "NK"
 };
 
+const YEAR = 2026, TERM = TERMS.FALL;
+const RETRY_TIME = 5000, ABORT_TIME = 30_000;
+
 const OPEN_COURSES_URL = (year, term, campus) => 
     `https://classes.rutgers.edu/soc/api/openSections.json?year=${year}&term=${term}&campus=${campus}`;
 
 const COURSE_INFO_URL = (year, term, campus) => 
     `https://classes.rutgers.edu/soc/api/courses.json?year=${year}&term=${term}&campus=${campus}`;
 
+
 async function getOpenCourses() {
-    const year = 2026, term = TERMS.FALL;
+    let openCourses;
+    while(true) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => { controller.abort() }, ABORT_TIME);
+        const options = {signal: controller.signal};
 
-    const resNB = await fetch(OPEN_COURSES_URL(year, term, CAMPUSES.NEW_BRUNSWICK)),
-          resCM = await fetch(OPEN_COURSES_URL(year, term, CAMPUSES.CAMDEN)),
-          resNK = await fetch(OPEN_COURSES_URL(year, term, CAMPUSES.NEWARK));
+        try {
+            const results = await Promise.all([
+                fetch(OPEN_COURSES_URL(YEAR, TERM, CAMPUSES.NEW_BRUNSWICK), options),
+                fetch(OPEN_COURSES_URL(YEAR, TERM, CAMPUSES.CAMDEN), options),
+                fetch(OPEN_COURSES_URL(YEAR, TERM, CAMPUSES.NEWARK), options)
+            ]);
 
-    if(!resNB.ok || !resCM.ok || !resNK.ok) {
-        console.log("getOpenCourses() fetch() failed");
-        return;
+            for(const res of results) {
+                if(!res.ok) throw new Error(`HTTP error status: ${res.status}`);
+            }
+            
+            openCourses = (await Promise.all(results.map(res => res.json()))).flat();
+            break;
+        }
+        catch(err) {
+            console.error(`getOpenCourses() error: ${err}`);
+            await new Promise(resolve => setTimeout(resolve, RETRY_TIME));
+            
+            console.log("retrying...");
+        }
+        finally {
+            clearTimeout(timeout);
+        }
     }
-
-    const openCourses = [...(await resNB.json()), ...(await resCM.json()), ...(await resNK.json())];
 
     return openCourses;
 }
 
 async function getCourseInfo() {
-    const year = 2026, term = TERMS.FALL;
+    let courseInfo;
+    while(true) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => { controller.abort() }, ABORT_TIME);
+        const options = {signal: controller.signal};
 
-    const resNB = await fetch(COURSE_INFO_URL(year, term, CAMPUSES.NEW_BRUNSWICK)),
-          resCM = await fetch(COURSE_INFO_URL(year, term, CAMPUSES.CAMDEN)),
-          resNK = await fetch(COURSE_INFO_URL(year, term, CAMPUSES.NEWARK));
+        try {
+            const results = await Promise.all([
+                fetch(COURSE_INFO_URL(YEAR, TERM, CAMPUSES.NEW_BRUNSWICK), options),
+                fetch(COURSE_INFO_URL(YEAR, TERM, CAMPUSES.CAMDEN), options),
+                fetch(COURSE_INFO_URL(YEAR, TERM, CAMPUSES.NEWARK), options)
+            ]);
 
-    if(!resNB.ok || !resCM.ok || !resNK.ok) {
-        console.log("getCourseInfo() fetch() failed");
-        return;
+            for(const res of results) {
+                if(!res.ok) throw new Error(`HTTP error status: ${res.status}`);
+            }
+
+            courseInfo = (await Promise.all(results.map(res => res.json()))).flat();
+            break;
+        }
+        catch(err) {
+            console.error(`getCourseInfo() error: ${err}`);
+            await new Promise(resolve => setTimeout(resolve, RETRY_TIME));
+            
+            console.log("retrying...");
+        }
+        finally {
+            clearTimeout(timeout);
+        }
     }
-
-    const courseInfo = [...(await resNB.json()), ...(await resCM.json()), ...(await resNK.json())];
 
     return courseInfo.map(course => ({
             campus: course.campusCode,
@@ -57,10 +97,10 @@ async function getCourseInfo() {
                 number: section.number,
                 meetingTimes: section.meetingTimes.map(meet => ({
                     campusName: meet.campusName || "N/A",
-                    day: meet.meetingDay || "N/A",
-                    timeOfDay: meet.pmCode  || "N/A",
-                    startTime: meet.startTime || "N/A",
-                    endTime: meet.endTime || "N/A",
+                    day: meet.meetingDay        || "N/A",
+                    timeOfDay: meet.pmCode      || "N/A",
+                    startTime: meet.startTime   || "N/A",
+                    endTime: meet.endTime       || "N/A",
                 }))
             }))
         }));
