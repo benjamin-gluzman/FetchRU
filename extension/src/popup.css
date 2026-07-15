@@ -1,0 +1,21 @@
+html, body {
+    width: 400px;
+    height: 300px;
+    margin: 0;
+    padding: 5px;
+}
+
+#header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+#addWatch {
+    background-image: url("../assets/plus.svg");
+    background-size: cover;
+    background-position: center;
+    width: 30px;
+    height: 30px;
+}

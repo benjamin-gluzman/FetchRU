@@ -1,0 +1,12 @@
+{
+  "name": "FetchRU",
+  "description": "Rutgers Course Watcher",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "./dist/popup.html"
+  },
+  "background": {
+    "service_worker": "./dist/background.js"
+  }
+}
