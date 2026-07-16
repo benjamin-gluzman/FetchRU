@@ -10,7 +10,9 @@
     "service_worker": "./dist/background.js"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "background",
+    "notifications"
   ],
   "host_permissions": [
     "https://classes.rutgers.edu/*"
