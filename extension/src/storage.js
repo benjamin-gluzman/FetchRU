@@ -20,22 +20,22 @@ async function getWatches() {
 }
 
 async function addWatch(courseIndex) {
-    const watches = await localStorage.get("watches").watches;
+    const watches = (await localStorage.get("watches")).watches;
     watches.push(courseIndex);
 
     await localStorage.set({ watches });
 }
 
 async function removeWatch(courseIndex) {
-    const watches = await localStorage.get("watches").watches;
-    watches.filter(index => index != courseIndex);
+    const watches = (await localStorage.get("watches")).watches;
 
-    await localStorage.set({ watches });
+    await localStorage.set({ watches: watches.filter(index => index != courseIndex) });
 }
 
-async function trackWatches(currWatches) {
-    localStorage.onChanged.addListener(() => {
-        currentWatches = localStorage.get("watches").watches;
+function trackWatches(currWatches) {
+    localStorage.onChanged.addListener(async () => {
+        const updatedWatches = (await localStorage.get("watches")).watches;
+        currWatches.splice(0, currWatches.length, ...updatedWatches);
     });
 }
 
