@@ -3,16 +3,35 @@
 <head>
 </head>
 <body>
-    <h1>FetchRU</h1>
+    <div id="app">
+        <header id="header">
+            <div>
+                <h1>FetchRU</h1>
+                <p>Monitor Rutgers course openings</p>
+            </div>
+        </header>
 
-    <div id="header">
-        <h2>Watches</h2>
-        <button id="addWatch"></button>
-    </div>
-    
-    <div id="content">
-        <ul id="watchesList">
-        </ul>
+        <section class="card">
+            <div class="cardHeader">
+                <h2>Watching</h2>
+                <span id="watchCount">0</span>
+            </div>
+
+            <ul id="watchesList"></ul>
+        </section>
+
+        <section class="card">
+            <h2>Add Watch</h2>
+
+            <input
+                id="courseIndex"
+                type="text"
+                maxlength="5"
+                placeholder="Course Index"
+            >
+
+            <button id="addWatchBtn">Add Watch</button>
+        </section>
     </div>
 </body>
 </html>

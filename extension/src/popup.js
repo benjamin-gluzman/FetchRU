@@ -38,6 +38,9 @@ async function loadWatches() {
     for(const courseIndex of watches) {
         watchesList.appendChild(createNewWatch(courseIndex));
     }
+    
+    const watchCount = document.querySelector("#watchCount");
+    watchCount.textContent = watches.length;
 }
 
 function createNewWatch(courseIndex) {
@@ -50,7 +53,7 @@ function createNewWatch(courseIndex) {
     removeBtn.classList.add("removeBtn");
     removeBtn.addEventListener("click", async () => {
         await storage.removeWatch(courseIndex);
-        watchesList.removeChild(item);
+        loadWatches();
     });
 
     item.append(h3, removeBtn);

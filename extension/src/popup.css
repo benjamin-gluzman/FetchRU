@@ -1,21 +1,154 @@
 html, body {
     width: 400px;
-    height: 300px;
+    min-height: 420px;
+
     margin: 0;
-    padding: 5px;
+    padding: 0;
+
+    background: #121212;
+    color: white;
+
+    font-family: "Inter", "system-ui", "sans-serif";
+}
+
+#app {
+    padding: 18px;
 }
 
 #header {
+    margin-bottom: 20px;
+}
+
+#header h1 {
+    margin: 0;
+
+    color: #cc0033;
+    font-size: 28px;
+}
+
+#header p {
+    margin-top: 4px;
+    color: #999;
+    font-size: 13px;
+}
+
+.card {
+    background: #1b1b1b;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #2a2a2a;
+}
+
+.cardHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    margin-bottom: 12px;
 }
 
-#addWatch {
-    background-image: url("../assets/plus.svg");
-    background-size: cover;
+.cardHeader h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+#watchCount {
+    background: #cc0033;
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+}
+
+#watchesList {
+    margin: 0;
+    padding: 0;
+    
+    list-style: none;
+}
+
+#watchesList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px 0;
+    border-bottom: 1px solid #2d2d2d;
+}
+
+#watchesList li:last-child {
+    border-bottom: none;
+}
+
+#watchesList h3 {
+    margin: 0;
+
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.removeBtn {
+    width: 32px;
+    height: 32px;
+
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+
+
+    background-image: url("../assets/cross.svg");
     background-position: center;
-    width: 30px;
-    height: 30px;
+    background-repeat: no-repeat;
+    background-size: 16px;
+}
+
+.removeBtn:hover {
+    background-color: #303030;
+}
+
+#courseIndex {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-bottom: 12px;
+
+    background: #252525;
+    color: white;
+
+    border: 1px solid #444;
+    border-radius: 8px;
+
+    font-size: 15px;
+}
+
+#courseIndex:focus {
+    outline: none;
+    border-color: #cc0033;
+}
+
+#addWatchBtn {
+    width: 100%;
+    padding: 12px;
+
+    background: #cc0033;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    transition: background .15s;
+}
+
+#addWatchBtn:hover {
+    background: #b0002c;
 }
