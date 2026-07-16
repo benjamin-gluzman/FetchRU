@@ -36,6 +36,13 @@ function trackWatches(currWatches) {
     localStorage.onChanged.addListener(async () => {
         const updatedWatches = (await localStorage.get("watches")).watches;
         currWatches.splice(0, currWatches.length, ...updatedWatches);
+
+        try {
+            await chrome.runtime.sendMessage({ action: "update_dom" });
+        }
+        catch(err) {
+            console.log(`Error sending message: ${err}`);
+        }
     });
 }
 
