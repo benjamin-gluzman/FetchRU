@@ -4,10 +4,7 @@ import { notifyUser } from "./notifications.js";
 
 await storage.initializeStorage();
 
-const [currWatches, courseInfo] = await Promise.all([
-    storage.getWatches(), 
-    storage.getStoredCourseInfo()
-]);
+const currWatches = await storage.getWatches();
 
 storage.trackWatches(currWatches);
 startPolling();

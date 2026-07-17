@@ -1,12 +1,14 @@
 import "./popup.css";
 import { storage } from "./storage.js";
 
+const courseIndexMap = await storage.getCourseIndexMap();
+
 const watchesList = document.querySelector("#watchesList");
 
 // Display stored watches
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadWatches();
-});
+await loadWatches();
+
+createInteractionHandlers();
 
 // Update DOM when a course being watched is removed (meaning it opened) in the background
 chrome.runtime.onMessage.addListener(async (message) => {
@@ -14,8 +16,6 @@ chrome.runtime.onMessage.addListener(async (message) => {
         await loadWatches();
     }
 });
-
-createInteractionHandlers();
 
 
 function createInteractionHandlers() {
@@ -46,20 +46,24 @@ function createInteractionHandlers() {
 
     // Returns true if the index is valid, false otherwise
     async function isValidCourseIndex(courseIndex) {
-        if(!isInteger(courseIndex) || !(await storage.hasCourseIndex(courseIndex))) {
-            errorBox.textContent = "Invalid course index";
-            errorBox.classList.add("active");
-            return false;
-        }
-
+        let isValid = true;
         const watches = await storage.getWatches();
-        if(watches.includes(courseIndex)) {
+
+        if(!isInteger(courseIndex)) {
+            errorBox.textContent = "⚠ Invalid course index. Please enter a 5-digit index.";
+            isValid = false;
+        }
+        else if(!courseIndexMap.has(courseIndex)) {
+            errorBox.textContent = "Course index does not exist";
+            isValid = false;
+        }
+        else if(watches.includes(courseIndex)) {
             errorBox.textContent = "Duplicate course index";
-            errorBox.classList.add("active");
-            return false;
+            isValid = false;
         }
 
-        return true;
+        if(!isValid) errorBox.classList.add("active");
+        return isValid;
     }
 
     function isInteger(courseIndex) {
@@ -86,7 +90,7 @@ function createNewWatch(courseIndex) {
           h3 = document.createElement("h3"),
           removeBtn = document.createElement("button");
     
-    h3.textContent = `${courseIndex}`;
+    h3.textContent = courseIndexMap.get(courseIndex);
 
     removeBtn.classList.add("removeWatchBtn");
     removeBtn.addEventListener("click", async () => {

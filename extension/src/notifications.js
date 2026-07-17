@@ -2,9 +2,11 @@ import { storage } from "./storage.js";
 import logo from "../assets/logo.png";
 
 const notif = chrome.notifications;
+const courseIndexMap = await storage.getCourseIndexMap();
+
 const WEBREG_URL = "https://sims.rutgers.edu/webreg/editSchedule.htm?login=cas&semesterSelection=92026&indexList=";
 
-notif.onClicked.addListener(async (notificationId) => {
+notif.onClosed.addListener(async (notificationId) => {
     await updateBadge();
 });
 
@@ -29,7 +31,7 @@ async function notifyUser(courseIndex) {
         type: "basic",
         iconUrl: logo,
         title: "Course Open!",
-        message: `${courseIndex} is now open!`,
+        message: `${courseIndexMap.get(courseIndex)} is now open!`,
         buttons: [
             { title: "Register ↗" },
             { title: "Rewatch 🔍" }

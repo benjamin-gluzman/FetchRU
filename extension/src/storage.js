@@ -21,15 +21,13 @@ async function initializeStorage() {
     ]);
 }
 
-async function hasCourseIndex(courseIndex) {
-    const courseIndexMap = new Map(
+async function getCourseIndexMap() {
+    return new Map(
         Object.entries(
             (await localStorage.get("courseIndexMap"))
             .courseIndexMap
         )
     );
-
-    return courseIndexMap.has(courseIndex);
 }
 
 async function getWatches() {
@@ -65,7 +63,7 @@ function trackWatches(currWatches) {
 
 export const storage = {
     initializeStorage,
-    hasCourseIndex,
+    getCourseIndexMap,
     getWatches,
     addWatch,
     removeWatch,
