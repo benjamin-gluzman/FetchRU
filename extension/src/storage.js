@@ -3,16 +3,33 @@ import { getCourseInfo } from "../../src/shared/rutgersApi.js";
 const localStorage = chrome.storage.local;
 
 async function initializeStorage() {
-    const courseInfo = await getCourseInfo();
-    
+    const courses = await getCourseInfo(),
+          courseIndexMap = new Map();
+
+    for(const course of courses) {
+        for(const section of course.sections) {
+            courseIndexMap.set(
+                section.courseIndex,
+                `${section.courseIndex} | ${course.title} (${course.courseString}:${section.number})` 
+            );
+        }
+    }
+
     await Promise.all([
-        localStorage.set({ courseInfo }),
+        localStorage.set({ courseIndexMap: Object.fromEntries(courseIndexMap) }),
         localStorage.set({ watches: [] })
     ]);
 }
 
-async function getStoredCourseInfo() {
-    return (await localStorage.get("courseInfo")).courseInfo;
+async function hasCourseIndex(courseIndex) {
+    const courseIndexMap = new Map(
+        Object.entries(
+            (await localStorage.get("courseIndexMap"))
+            .courseIndexMap
+        )
+    );
+
+    return courseIndexMap.has(courseIndex);
 }
 
 async function getWatches() {
@@ -48,7 +65,7 @@ function trackWatches(currWatches) {
 
 export const storage = {
     initializeStorage,
-    getStoredCourseInfo,
+    hasCourseIndex,
     getWatches,
     addWatch,
     removeWatch,

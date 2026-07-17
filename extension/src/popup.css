@@ -145,7 +145,7 @@ html, body {
     font-weight: 500;
 }
 
-.removeBtn {
+.removeWatchBtn {
     width: 32px;
     height: 32px;
 
@@ -161,7 +161,7 @@ html, body {
     background-size: 16px;
 }
 
-.removeBtn:hover {
+.removeWatchBtn:hover {
     background-color: #303030;
 }
 
@@ -169,7 +169,7 @@ html, body {
     width: 100%;
     box-sizing: border-box;
     padding: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 
     background: #252525;
     color: white;
@@ -183,6 +183,43 @@ html, body {
 #courseIndex:focus {
     outline: none;
     border-color: #cc0033;
+}
+
+#error {
+    box-sizing: border-box;
+    width: 100%;
+
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+
+    margin-top: 0;
+    padding: 0 12px;
+
+    background: rgba(204, 0, 51, 0.12);
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    color: #ffb3c2;
+    font-size: 13px;
+    line-height: 1.4;
+
+    transition:
+        opacity .2s ease,
+        max-height .2s ease,
+        margin .2s ease,
+        padding .2s ease,
+        border-color .2s ease;
+}
+
+#error.active {
+    opacity: 1;
+    max-height: 80px;
+
+    margin: 10px 0 12px;
+    padding: 10px 12px;
+
+    border-color: rgba(204, 0, 51, 0.35);
 }
 
 #addWatchBtn {
