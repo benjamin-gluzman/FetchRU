@@ -78,6 +78,31 @@ html, body {
     font-size: 18px;
 }
 
+#statusDot {
+    display: inline-block;
+
+    width: 12px;
+    height: 12px;
+
+    margin-right: 8px;
+
+    border-radius: 50%;
+
+    background: #2ecc71;
+
+    animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: .35;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
 #watchCount {
     background: #cc0033;
 
@@ -161,6 +186,41 @@ html, body {
 
 #watchesList li {
     animation: watchAdded .18s ease;
+}
+
+#watchesList[hidden] {
+    display: none !important;
+}
+
+#emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    height: 120px;
+
+    text-align: center;
+
+    color: #8b8b8b;
+}
+
+#emptyState[hidden] {
+    display: none !important;
+}
+
+#emptyState p {
+    margin: 0;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#emptyState span {
+    margin-top: 6px;
+
+    font-size: 13px;
+    color: #666;
 }
 
 .watchInfo {

@@ -40,8 +40,8 @@ function createInteractionHandlers() {
 
         courseIndexInput.value = "";
 
-        storage.addWatch(courseIndex);
-        watchesList.appendChild(createNewWatch(courseIndex));
+        await storage.addWatch(courseIndex);
+        await loadWatches();
     }
 
     // Returns true if the index is valid, false otherwise
@@ -76,13 +76,18 @@ function createInteractionHandlers() {
 async function loadWatches() {
     watchesList.replaceChildren();
     const watches = await storage.getWatches();
+
+    const watchCount = document.querySelector("#watchCount"),
+          emptyState = document.querySelector("#emptyState");
+
+    watchCount.textContent = watches.length;
     
+    emptyState.hidden = watches.length !== 0;
+    watchesList.hidden = watches.length === 0;
+
     for(const courseIndex of watches) {
         watchesList.appendChild(createNewWatch(courseIndex));
     }
-    
-    const watchCount = document.querySelector("#watchCount");
-    watchCount.textContent = watches.length;
 }
 
 function createNewWatch(courseIndex) {
@@ -100,9 +105,8 @@ function createNewWatch(courseIndex) {
 
     removeBtn.addEventListener("click", async () => {
         await storage.removeWatch(courseIndex);
-        loadWatches();
+        await loadWatches();
     });
-
 
     watchInfo.classList.add("watchInfo");
     index.classList.add("index");
