@@ -12,7 +12,8 @@
   "permissions": [
     "storage",
     "background",
-    "notifications"
+    "notifications",
+    "alarms"
   ],
   "host_permissions": [
     "https://classes.rutgers.edu/*"

@@ -7,25 +7,29 @@ await storage.initializeStorage();
 const currWatches = await storage.getWatches();
 
 storage.trackWatches(currWatches);
-startPolling();
 
-function startPolling() {
-    const FETCH_INTERVAL = 5000;
+chrome.alarms.create("poll", {
+    periodInMinutes: 0.5
+});
 
-    setInterval(async () => {
-        const openCourses = (await getOpenCourses()).sort();
+chrome.alarms.onAlarm.addListener(async alarm => {
+    if (alarm.name !== "poll") return;
 
-        for(const courseIndex of currWatches) {
-            if(containsIndex(openCourses, courseIndex)) {
-                await notifyUser(courseIndex);
-                await storage.removeWatch(courseIndex);
-            }
+    await pollCourses();
+});
+
+async function pollCourses() {
+    const openCourses = (await getOpenCourses()).sort();
+
+    for(const courseIndex of currWatches) {
+        if(containsIndex(openCourses, courseIndex)) {
+            await notifyUser(courseIndex);
+            await storage.removeWatch(courseIndex);
         }
-        
-    }, FETCH_INTERVAL);
+    }
+
+    setTimeout(() => { pollCourses() }, 5000);
 }
-
-
 
 function containsIndex(openCourses, courseIndex) {
     let l = 0, r = openCourses.length - 1;

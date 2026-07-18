@@ -17,7 +17,7 @@ async function initializeStorage() {
 
     await Promise.all([
         localStorage.set({ courseIndexMap: Object.fromEntries(courseIndexMap) }),
-        localStorage.set({ watches: [] })
+        localStorage.set({ watches: await getWatches() || [] })
     ]);
 }
 
