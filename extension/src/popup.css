@@ -237,8 +237,11 @@ html, body {
 .index {
     flex-shrink: 0;
 
+    font-family: "Roboto Mono", monospace;
+    font-optical-sizing: auto;
     font-size: 15px;
     font-weight: 600;
+    
     color: #fff;
 }
 

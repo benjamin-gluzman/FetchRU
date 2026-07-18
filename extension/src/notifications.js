@@ -17,9 +17,17 @@ notif.onButtonClicked.addListener(async (notificationId, buttonIndex) => {
     const courseIndex = notificationId;
 
     if(buttonIndex === 0) {
-        chrome.tabs.create({
-            url: `${WEBREG_URL}${courseIndex}`
-        });
+        const windowsOpen = (await chrome.windows.getAll()).length;
+        if(windowsOpen === 0) {
+            await chrome.windows.create({
+                url: `${WEBREG_URL}${courseIndex}`
+            });
+        }
+        else {
+            await chrome.tabs.create({
+                url: `${WEBREG_URL}${courseIndex}`
+            });
+        }
     }
     else {
         await storage.addWatch(courseIndex);
