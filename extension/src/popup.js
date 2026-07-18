@@ -10,7 +10,7 @@ await loadWatches();
 
 createInteractionHandlers();
 
-// Update DOM when a course being watched is removed (meaning it opened) in the background
+// Update DOM when a signal is recieved from storage.js when the watches list changes
 chrome.runtime.onMessage.addListener(async (message) => {
     if(message.action === "update_dom") {
         await loadWatches();
@@ -41,7 +41,6 @@ function createInteractionHandlers() {
         courseIndexInput.value = "";
 
         await storage.addWatch(courseIndex);
-        await loadWatches();
     }
 
     // Returns true if the index is valid, false otherwise
@@ -105,7 +104,6 @@ function createNewWatch(courseIndex) {
 
     removeBtn.addEventListener("click", async () => {
         await storage.removeWatch(courseIndex);
-        await loadWatches();
     });
 
     watchInfo.classList.add("watchInfo");

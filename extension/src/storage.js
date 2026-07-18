@@ -19,6 +19,15 @@ async function initializeStorage() {
         localStorage.set({ courseIndexMap: Object.fromEntries(courseIndexMap) }),
         localStorage.set({ watches: await getWatches() || [] })
     ]);
+
+    localStorage.onChanged.addListener(async () => {
+        try {
+            await chrome.runtime.sendMessage({ action: "update_dom" });
+        }
+        catch(err) {
+            console.log(`Error sending message: ${err}`);
+        }
+    });
 }
 
 async function getCourseIndexMap() {
@@ -47,19 +56,6 @@ async function removeWatch(courseIndex) {
     await localStorage.set({ watches: watches.filter(index => index != courseIndex) });
 }
 
-function trackWatches(currWatches) {
-    localStorage.onChanged.addListener(async () => {
-        const updatedWatches = (await localStorage.get("watches")).watches;
-        currWatches.splice(0, currWatches.length, ...updatedWatches);
-
-        try {
-            await chrome.runtime.sendMessage({ action: "update_dom" });
-        }
-        catch(err) {
-            console.log(`Error sending message: ${err}`);
-        }
-    });
-}
 
 export const storage = {
     initializeStorage,
@@ -67,5 +63,4 @@ export const storage = {
     getWatches,
     addWatch,
     removeWatch,
-    trackWatches,
 };

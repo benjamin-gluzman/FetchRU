@@ -4,10 +4,6 @@ import { notifyUser } from "./notifications.js";
 
 await storage.initializeStorage();
 
-const currWatches = await storage.getWatches();
-
-storage.trackWatches(currWatches);
-
 chrome.alarms.create("poll", {
     periodInMinutes: 0.5
 });
@@ -19,16 +15,17 @@ chrome.alarms.onAlarm.addListener(async alarm => {
 });
 
 async function pollCourses() {
+    const watches = await storage.getWatches();
     const openCourses = (await getOpenCourses()).sort();
 
-    for(const courseIndex of currWatches) {
+    for(const courseIndex of watches) {
         if(containsIndex(openCourses, courseIndex)) {
             await notifyUser(courseIndex);
             await storage.removeWatch(courseIndex);
         }
     }
 
-    setTimeout(() => { pollCourses() }, 5000);
+    setTimeout(pollCourses, 5000);
 }
 
 function containsIndex(openCourses, courseIndex) {
