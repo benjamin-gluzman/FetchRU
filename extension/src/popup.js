@@ -86,18 +86,33 @@ async function loadWatches() {
 }
 
 function createNewWatch(courseIndex) {
-    const item = document.createElement("li"),
-          h3 = document.createElement("h3"),
-          removeBtn = document.createElement("button");
+    const li =          document.createElement("li"),
+          watchInfo =   document.createElement("div"),
+          index =       document.createElement("span"),
+          divider =     document.createElement("span"),
+          course =      document.createElement("span"),
+          removeBtn =   document.createElement("button");
     
-    h3.textContent = courseIndexMap.get(courseIndex);
+    
+    index.textContent = courseIndex;
+    divider.textContent = "•";
+    course.textContent = courseIndexMap.get(courseIndex);
 
-    removeBtn.classList.add("removeWatchBtn");
     removeBtn.addEventListener("click", async () => {
         await storage.removeWatch(courseIndex);
         loadWatches();
     });
 
-    item.append(h3, removeBtn);
-    return item;
+
+    watchInfo.classList.add("watchInfo");
+    index.classList.add("index");
+    divider.classList.add("divider");
+    course.classList.add("course");
+    removeBtn.classList.add("removeWatchBtn");
+
+
+    watchInfo.append(index, divider, course);
+    li.append(watchInfo, removeBtn);
+    
+    return li;
 }

@@ -10,7 +10,7 @@ async function initializeStorage() {
         for(const section of course.sections) {
             courseIndexMap.set(
                 section.courseIndex,
-                `${section.courseIndex} | ${course.title} (${course.courseString}:${section.number})` 
+                `${course.title} (${course.courseString}:${section.number})` 
             );
         }
     }

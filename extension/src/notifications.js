@@ -31,7 +31,7 @@ async function notifyUser(courseIndex) {
         type: "basic",
         iconUrl: logo,
         title: "Course Open!",
-        message: `${courseIndexMap.get(courseIndex)} is now open!`,
+        message: `${courseIndex} • ${courseIndexMap.get(courseIndex)} is now open!`,
         buttons: [
             { title: "Register ↗" },
             { title: "Rewatch 🔍" }

@@ -12,11 +12,11 @@ html, body {
 }
 
 #app {
-    padding: 18px;
+    padding: 14px 18px;
 }
 
 #header {
-    margin-bottom: 22px;
+    margin-bottom: 16px;
 }
 
 #titleRow {
@@ -45,7 +45,7 @@ html, body {
 }
 
 #header p {
-    margin: 6px 0 0 48px;
+    margin: 0 0 0 48px;
 
     color: #9a9a9a;
 
@@ -54,6 +54,9 @@ html, body {
 }
 
 .card {
+    display: flex;
+    flex-direction: column;
+    
     background: #1b1b1b;
     border-radius: 12px;
     padding: 16px;
@@ -70,6 +73,8 @@ html, body {
 
 .cardHeader h2 {
     margin: 0;
+    padding: 0;
+    height: fit-content;
     font-size: 18px;
 }
 
@@ -91,8 +96,13 @@ html, body {
     padding: 0;    
     list-style: none;
 
-    max-height: 200px;
-    overflow: auto;
+    flex: 1;
+
+    max-height: 145px;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
 
     scrollbar-width: thin;
     scrollbar-color: #555 transparent;
@@ -124,7 +134,6 @@ html, body {
     height: 0;
 }
 
-
 #watchesList li {
     display: flex;
     justify-content: space-between;
@@ -138,11 +147,52 @@ html, body {
     border-bottom: none;
 }
 
-#watchesList h3 {
-    margin: 0;
+@keyframes watchAdded {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
 
-    font-size: 16px;
-    font-weight: 500;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#watchesList li {
+    animation: watchAdded .18s ease;
+}
+
+.watchInfo {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+.index {
+    flex-shrink: 0;
+
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.divider {
+    color: #666;
+    flex-shrink: 0;
+}
+
+.course {
+    color: #b8b8b8;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .removeWatchBtn {
