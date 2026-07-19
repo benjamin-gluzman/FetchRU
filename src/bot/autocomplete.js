@@ -1,4 +1,5 @@
 import { database } from "../core/database.js";
+import { safeAutocomplete } from "./responses.js";
 
 const MAX_CHOICES = 25;
 
@@ -19,7 +20,7 @@ async function handleAutocomplete(interaction) {
             value: watch.courseIndex
         }));
     
-    await interaction.respond(choices)
+    await safeAutocomplete(interaction, choices);
 }
 
 export { handleAutocomplete };

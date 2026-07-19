@@ -1,5 +1,6 @@
 import { database } from "../core/database.js";
 import { em } from "../ui/embeds.js";
+import { safeReply } from "./responses.js";
 
 async function handleInteraction(interaction) {
     const fields = interaction.customId.split("-");
@@ -14,7 +15,7 @@ async function handleRewatch(interaction, fields) {
     const courseIndex = fields[1];
     database.addWatch(interaction.user.id, courseIndex);
 
-    await interaction.reply({
+    await safeReply(interaction, {
         embeds: [ em.getRewatchEmbed(interaction.user, courseIndex) ]
     });
 }

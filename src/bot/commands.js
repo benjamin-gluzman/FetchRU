@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "discord.js";
 import { database } from "../core/database.js";
 import { em } from "../ui/embeds.js";
-
+import { safeReply } from "./responses.js";
 
 const commands = [
     new SlashCommandBuilder()
@@ -75,7 +75,7 @@ async function handleCommand(interaction) {
 async function handleWatch(interaction) {
     const courseIndex = interaction.options.getString("index");
     if(!database.isValidCourseIndex(courseIndex)) {
-        await interaction.reply({
+        await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.WATCH) ]
         });
         return;
@@ -83,14 +83,14 @@ async function handleWatch(interaction) {
 
     const watches = database.getWatches(interaction.user.id), watchesUsed = watches.length;
     if(watches.includes(courseIndex)) {
-        await interaction.reply({
+        await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.DUPLICATE_INDEX) ]
         });
         return;
     }
     
     if(watchesUsed >= MAX_WATCHES) {
-        await interaction.reply({
+        await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.NO_MORE_WATCHES) ]
         });
         return;
@@ -98,7 +98,7 @@ async function handleWatch(interaction) {
 
     database.addWatch(interaction.user.id, courseIndex);
 
-    await interaction.reply({
+    await safeReply(interaction, {
         embeds: [ em.getWatchEmbed(interaction.user, courseIndex, watchesUsed + 1) ]
     });
 }
@@ -108,7 +108,7 @@ async function handleUnwatch(interaction) {
     const watches = database.getWatches(interaction.user.id), watchesUsed = watches.length;
 
     if(!watches.includes(courseIndex)) {
-        await interaction.reply({
+        await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.UNWATCH) ]
         });
         return;
@@ -116,7 +116,7 @@ async function handleUnwatch(interaction) {
 
     database.removeWatch(interaction.user.id, courseIndex);
 
-    await interaction.reply({
+    await safeReply(interaction, {
         embeds: [ em.getUnwatchEmbed(interaction.user, courseIndex, watchesUsed - 1) ]
     });
 }
@@ -124,7 +124,7 @@ async function handleUnwatch(interaction) {
 async function handleCheck(interaction) {
     const watches = database.getWatches(interaction.user.id);
     
-    await interaction.reply({
+    await safeReply(interaction, {
         embeds: [ em.getCheckEmbed(interaction.user, 
             watches.map(courseIndex => database.getInfoByCourseIndex(courseIndex)), 
             watches.length) ]
@@ -133,7 +133,7 @@ async function handleCheck(interaction) {
 
 async function handleClear(interaction) {
     if(database.getWatches(interaction.user.id).length === 0) {
-        await interaction.reply({
+        await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.CLEAR) ]
         });
         return;
@@ -141,7 +141,7 @@ async function handleClear(interaction) {
 
     database.clearWatches(interaction.user.id);
 
-    await interaction.reply({
+    await safeReply(interaction, {
         embeds: [ em.getClearEmbed(interaction.user) ]
     });
 }
@@ -150,7 +150,7 @@ async function handleSearch(interaction) {
     const courseIndex = interaction.options.getString("index");
 
     if(!database.isValidCourseIndex(courseIndex)) {
-        await interaction.reply({
+        await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.SEARCH) ]
         });
         return;
@@ -159,13 +159,13 @@ async function handleSearch(interaction) {
     const courseInfo = database.getInfoByCourseIndex(courseIndex),
         meetingTime = database.getMeetingTimeByCourseIndex(courseIndex);
 
-    await interaction.reply({
+    await safeReply(interaction, {
         embeds: [ em.getSearchEmbed(interaction.user, courseInfo, meetingTime) ]
     });
 }
 
 async function handleHelp(interaction) {
-    await interaction.reply({
+    await safeReply(interaction, {
         embeds: [ em.getHelpEmbed(interaction.user) ]
     });
 }

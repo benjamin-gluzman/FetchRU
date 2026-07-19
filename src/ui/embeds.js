@@ -98,7 +98,7 @@ function getHelpEmbed(user) {
     return embed;
 }
 
-function getNotifyEmbed(user, courseInfo, courseIndex) {
+function getNotifyEmbed(courseInfo, courseIndex) {
     const embed = new EmbedBuilder()
     .setTitle(`${courseInfo.title} (${courseIndex}) has opened!`)
     .addFields(
@@ -119,7 +119,7 @@ function getNotifyEmbed(user, courseInfo, courseIndex) {
         }
     )
 
-    addExtraStyle(embed, user, COLORS.RED);
+    addExtraStyle(embed, client.user, COLORS.RED);
     return embed;
 }
 

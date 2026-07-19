@@ -1,7 +1,7 @@
 import { database } from "./core/database.js";
 import { startBot, client } from "./bot/bot.js";
 import { getCourseInfo } from "./shared/rutgersApi.js";
-import { startPolling } from "./core/poller.js";
+import { pollCourses } from "./core/poller.js";
 
 process.on("SIGINT", async () => {
     console.log("Shutting down bot");
@@ -13,4 +13,4 @@ process.on("SIGINT", async () => {
 database.importCourseInfo(await getCourseInfo());
 
 await startBot();
-startPolling();
+pollCourses();
