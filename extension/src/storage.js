@@ -33,48 +33,26 @@ async function initializeStorage() {
 async function getCourseIndexMap() {
     return new Map(
         Object.entries(
-            await retry(async () => (await localStorage.get("courseIndexMap")).courseIndexMap, "getCourseIndexMap()")
+            (await localStorage.get("courseIndexMap")).courseIndexMap || ""
         )
     );
 }
 
 async function getWatches() {
-    return await retry(async () => (await localStorage.get("watches")).watches, "getWatches()")
+    return (await localStorage.get("watches")).watches;
 }
 
 async function addWatch(courseIndex) {
-    const watches = await retry(async () => (await localStorage.get("watches")).watches, "addWatch()");
+    const watches = (await localStorage.get("watches")).watches;
     watches.push(courseIndex);
 
-    await retry(async () => await localStorage.set({ watches }), "addWatch()");
+    await localStorage.set({ watches });
 }
 
 async function removeWatch(courseIndex) {
-    const watches = await retry(async () => (await localStorage.get("watches")).watches, "removeWatch()");
+    const watches = (await localStorage.get("watches")).watches;
 
-    await retry(async () => await localStorage.set({ watches: watches.filter(index => index != courseIndex) }), "removeWatch()");
-}
-
-async function retry(operation, name) {
-    const MAX_RETRIES = 3, RETRY_DELAY = 100;
-
-    for (let attempt = 1; ; attempt++) {
-        try {
-            return await operation();
-        }
-        catch (err) {
-            if (attempt === MAX_RETRIES) {
-                console.error(`${name} failed after ${attempt} attempts`, err);
-                throw err;
-            }
-
-            console.warn(`${name} failed (attempt ${attempt}), retrying...`);
-
-            await new Promise(resolve =>
-                setTimeout(resolve, RETRY_DELAY * attempt)
-            );
-        }
-    }
+    await localStorage.set({ watches: watches.filter(index => index != courseIndex) });
 }
 
 

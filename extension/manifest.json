@@ -1,27 +1,26 @@
 {
   "name": "FetchRU",
-  "description": "Rutgers Course Watcher",
+  "description": "Instantly get notified when Rutgers course sections become available.",
   "version": "1.0",
   "manifest_version": 3,
   "action": {
-    "default_popup": "./dist/popup.html",
+    "default_popup": "popup.html",
     "default_icon": {
-        "128": "./assets/icons/icon128.png",
-        "48": "./assets/icons/icon48.png",
-        "16": "./assets/icons/icon16.png"
+        "128": "assets/icons/icon128.png",
+        "48": "assets/icons/icon48.png",
+        "16": "assets/icons/icon16.png"
     }
   },
   "icons": {
-    "128": "./assets/icons/icon128.png",
-    "48": "./assets/icons/icon48.png",
-    "16": "./assets/icons/icon16.png"
+    "128": "assets/icons/icon128.png",
+    "48": "assets/icons/icon48.png",
+    "16": "assets/icons/icon16.png"
   },
   "background": {
-    "service_worker": "./dist/background.js"
+    "service_worker": "background.js"
   },
   "permissions": [
     "storage",
-    "background",
     "notifications",
     "alarms"
   ],
