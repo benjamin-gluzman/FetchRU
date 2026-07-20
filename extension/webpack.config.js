@@ -2,7 +2,7 @@ import path from "node:path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 
 export default {
-  mode: "development",
+  mode: "production",
   entry: {
     popup: "./src/popup.js",
     background: "./src/background.js",
@@ -12,7 +12,6 @@ export default {
     path: path.resolve(import.meta.dirname, "dist"),
     clean: true,
   },
-  devtool: "inline-source-map",
   devServer: {
     watchFiles: ["./src/popup.html"],
   },
