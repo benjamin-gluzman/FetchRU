@@ -1,5 +1,6 @@
 import path from "node:path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+import CopyPlugin from "copy-webpack-plugin";
 
 export default {
   mode: "production",
@@ -16,6 +17,18 @@ export default {
     watchFiles: ["./src/popup.html"],
   },
   plugins: [
+    new CopyPlugin({
+        patterns: [
+            {
+                from: "manifest.json",
+                to: "manifest.json"
+            },
+            {
+                from: "assets",
+                to: "assets"
+            }
+        ]
+    }),
     new HtmlWebpackPlugin({
       filename: "popup.html",
       template: "./src/popup.html",

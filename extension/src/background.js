@@ -5,7 +5,8 @@ import { notifyUser } from "./notifications.js";
 await storage.initializeStorage();
 
 chrome.alarms.create("poll", {
-    periodInMinutes: 0.5
+    periodInMinutes: 0.5,
+    persistAcrossSessions: true
 });
 
 chrome.alarms.onAlarm.addListener(async alarm => {
