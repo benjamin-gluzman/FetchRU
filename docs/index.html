@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FetchRU | Rutgers Course Notifications</title>
+
+    <meta name="description" content="Receive instant notifications when Rutgers course sections open through a Discord bot or Chrome extension.">
+
+    <link rel="stylesheet" href="styles.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <img src="assets/logo.png" alt="FetchRU Logo">
+                <span>FetchRU</span>
+            </a>
+
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#discord">Discord Bot</a>
+                <a href="#extension">Extension</a>
+                <a href="#install">Install</a>
+                <a href="https://github.com/benjamin-gluzman/FetchRU" target="_blank">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+
+    <main>
+
+    <!-- ===================================================== -->
+    <!-- Hero -->
+    <!-- ===================================================== -->
+
+    <section class="hero">
+        <div class="container hero-content">
+            <div class="hero-text">
+
+                <span class="hero-badge">
+                    Rutgers Course Monitoring
+                </span>
+
+                <h1>
+                    Never Miss an
+                    <span>Open Course</span>
+                    Again.
+
+                </h1>
+
+                <p>
+                    FetchRU automatically monitors Rutgers course
+                    sections and notifies you the moment a seat opens.
+
+                    Choose between a lightweight Chrome extension or
+                    a Discord bot.
+                </p>
+
+                <div class="cta-container">
+                    <a href="#install" class="btn-install">Install Now ↓</a>
+                </div>
+
+            </div>
+
+            <div class="hero-image">
+                <img src="assets/logo.png" alt="FetchRU">
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- ===================================================== -->
+    <!-- Features -->
+    <!-- ===================================================== -->
+
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header">
+
+                <span>Features</span>
+
+                <h2>
+                    Built specifically
+                    for Rutgers students.
+                </h2>
+
+                <p>
+                    No refreshing WebReg.
+
+                    No checking course schedules every few minutes.
+
+                    Just notifications when they matter.
+                </p>
+            </div>
+
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        ⚡
+                    </div>
+
+                    <h3>Instant Notifications</h3>
+
+                    <p>
+                        Be notified within seconds when
+                        a watched course opens.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        🎯
+                    </div>
+
+                    <h3>Easy Course Tracking</h3>
+
+                    <p>
+                        Add and manage course watches in just a few clicks.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">
+                        🚀
+                    </div>
+                    
+                    <h3>Fast & Lightweight</h3>
+
+                    <p>
+                        Built to stay out of your way while continuously monitoring course availability.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- Discord Bot -->
+    <!-- ===================================================== -->
+
+    <section id="discord" class="section showcase">
+        <div class="container showcase-grid">
+            <div class="showcase-text">
+                <span class="section-tag">
+                    Discord Bot
+                </span>
+
+                <h2>
+                    Get notified
+                    directly in Discord.
+                </h2>
+
+                <p>
+                    FetchRU continuously monitors your watched
+                    course sections and sends a rich Discord
+                    notification the moment a seat becomes
+                    available.
+                </p>
+
+                <ul class="feature-list">
+                    <li>✓ Instant notifications</li>
+                    <li>✓ Direct WebReg links</li>
+                    <li>✓ Personal or server installation</li>
+                    <li>✓ Simple slash commands</li>
+                </ul>
+            </div>
+
+            <div class="showcase-image">
+                <h4>Discord Bot Preview</h4>
+
+                <div class="browser-frame">
+                    <div class="browser-header">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <img
+                        src="assets/screenshots/discord-bot.png"
+                        alt="Discord Bot Screenshot"
+                    >
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- Chrome Extension -->
+    <!-- ===================================================== -->
+
+    <section id="extension" class="section showcase alt-section">
+        <div class="container showcase-grid reverse">
+
+            <div class="showcase-image">
+                <h4>Chrome Extension Preview</h4>
+
+                <div class="browser-frame">
+
+                    <div class="browser-header">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="popup-preview">
+                        <img
+                            class="popup-image"
+                            src="assets/screenshots/chrome-extension.png"
+                            alt="Chrome Extension Screenshot"
+                        >
+
+                        <img
+                            class="notification-image"
+                            src="assets/screenshots/notification.png"
+                            alt="Notification Screenshot"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-text">
+
+                <span class="section-tag">
+                    Chrome Extension
+                </span>
+
+                <h2>
+                    Monitor courses
+                    without opening Discord.
+                </h2>
+
+                <p>
+                    Quickly add or remove course watches from
+                    a lightweight popup.
+
+                    The extension automatically keeps track of
+                    everything you're monitoring.
+                </p>
+
+                <ul class="feature-list">
+                    <li>✓ Lightweight popup</li>
+                    <li>✓ Unlimited watches</li>
+                    <li>✓ Native Chrome notifications</li>
+                    <li>✓ Modern, responsive interface</li>
+                </ul>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===================================================== -->
+    <!-- How It Works -->
+    <!-- ===================================================== -->
+
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span>
+                    How It Works
+                </span>
+
+                <h2>
+                    Start monitoring
+                    in under a minute.
+                </h2>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-card">
+                    <div class="timeline-number">
+                        1
+                    </div>
+
+                    <h3>
+                        Install
+                    </h3>
+
+                    <p>
+                        Add the Chrome Extension
+                        or invite the Discord Bot.
+                    </p>
+                </div>
+
+                <div class="timeline-card">
+                    <div class="timeline-number">
+                        2
+                    </div>
+
+                    <h3>
+                        Watch Courses
+                    </h3>
+
+                    <p>
+                        Enter the Rutgers course
+                        indices you want to monitor.
+                    </p>
+                </div>
+
+                <div class="timeline-card">
+                    <div class="timeline-number">
+                        3
+                    </div>
+
+                    <h3>
+                        Receive Notifications
+                    </h3>
+
+                    <p>
+                        FetchRU alerts you
+                        the instant a seat opens.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- Install -->
+    <!-- ===================================================== -->
+
+    <section id="install" class="section install-section">
+        <div class="container">
+            <div class="install-card">
+
+                <span class="section-tag">
+                    Get Started
+                </span>
+
+                <h2>
+                    Start monitoring
+                    Rutgers courses today.
+                </h2>
+
+                <p>
+                    Whether you prefer Discord notifications or a
+                    lightweight Chrome extension, FetchRU makes it
+                    easy to stay informed without constantly checking
+                    WebReg.
+                </p>
+
+                <div class="install-options">
+                    <div class="install-option">
+                        <h3>
+                            Discord Bot
+                        </h3>
+
+                        <p>
+                            Install FetchRU to your own account or
+                            invite it to a Discord server.
+                        </p>
+
+                        <div class="button-row">
+                            <a
+                                class="btn btn-primary"
+                                href="https://discord.com/oauth2/authorize?client_id=1505780813667762216&integration_type=1&scope=applications.commands"
+                                target="_blank"
+                            >
+                                Personal Install
+                            </a>
+
+                            <a
+                                class="btn btn-secondary"
+                                href="https://discord.com/oauth2/authorize?client_id=1505780813667762216&permissions=83968&integration_type=0&scope=bot+applications.commands"
+                                target="_blank"
+                            >
+                                Server Install
+                            </a>
+
+                        </div>
+                    </div>
+
+                    <div class="install-option">
+                        <h3>
+                            Chrome Extension
+                        </h3>
+
+                        <p>
+                            Receive desktop notifications directly
+                            from your browser.
+                        </p>
+
+                        <div class="button-row">
+                            <a
+                                class="btn btn-primary"
+                                href="#"
+                                target="_blank"
+                            >
+                                Install Extension
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="github-section">
+
+                    <h3>
+                        Open Source
+                    </h3>
+
+                    <p>
+                        View the source code, report bugs,
+                        or contribute on GitHub.
+                    </p>
+
+                    <a
+                        class="btn btn-outline"
+                        href="https://github.com/benjamin-gluzman/FetchRU"
+                        target="_blank"
+                    >
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- Footer -->
+    <!-- ===================================================== -->
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-left">
+                <a
+                    href="#"
+                    class="footer-logo"
+                >
+                    <img src="assets/logo.png" alt="FetchRU Logo">
+
+                    <span>
+                        FetchRU
+                    </span>
+
+                </a>
+
+                <p>
+                    Monitor Rutgers course openings through
+                    Discord or Chrome.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <div>
+                    <h4>
+                        Product
+                    </h4>
+
+                    <a href="#features">
+                        Features
+                    </a>
+
+                    <a href="#discord">
+                        Discord Bot
+                    </a>
+
+                    <a href="#extension">
+                        Chrome Extension
+                    </a>
+                </div>
+
+                <div>
+                    <h4>
+                        Resources
+                    </h4>
+
+                    <a href="https://github.com/benjamin-gluzman/FetchRU" target="_blank">
+                        GitHub
+                    </a>
+
+                    <a href="privacy.html">
+                        Privacy Policy
+                    </a>
+
+                    <a href="terms.html">
+                        Terms of Service
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="container">
+                <p>© 2026 FetchRU. Not affiliated with Rutgers University.</p>
+            </div>
+        </div>
+
+    </footer>
+
+    </main>
+</body>
+</html>
