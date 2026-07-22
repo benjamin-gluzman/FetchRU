@@ -1,23 +1,339 @@
-body{
- margin:0;
- font-family:Inter,system-ui,sans-serif;
- background:#f7f7f8;
- color:#222;
- line-height:1.7;
+/* =====================================================
+   FetchRU — Legal Page Styles (privacy.html / terms.html)
+   Shares the design system from styles.css. These pages
+   load legal.css standalone, so navbar + footer are
+   restyled here to match the main site.
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --scarlet: #cc0632;
+  --scarlet-dark: #93041f;
+  --scarlet-light: #fbe4e9;
+  --ink: #17130f;
+  --ink-soft: #4a443b;
+  --ink-faint: #8a8377;
+  --paper: #f5f2ea;
+  --paper-dim: #ece6d7;
+  --line: #ddd5c1;
+  --white: #ffffff;
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 14px;
+  --shadow-sm: 0 1px 2px rgba(23, 19, 15, 0.07);
+
+  --container-w: 1160px;
 }
-.legal-container{
- max-width:850px;
- margin:60px auto;
- background:#fff;
- padding:48px;
- border-radius:16px;
- box-shadow:0 10px 30px rgba(0,0,0,.08);
+
+/* ===================================================== */
+/* Reset                                                  */
+/* ===================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
-h1{font-size:2.5rem;margin-top:.2rem;color:#cc0033}
-h2{margin-top:2rem;color:#111827}
-a{color:#cc0033;text-decoration:none;font-weight:600}
-a:hover{text-decoration:underline}
-ul{padding-left:1.3rem}
-@media(max-width:700px){
- .legal-container{margin:20px;padding:24px}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+:focus-visible {
+  outline: 2px solid var(--scarlet);
+  outline-offset: 3px;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-w);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===================================================== */
+/* Navbar                                                 */
+/* ===================================================== */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(245, 242, 234, 0.86);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--ink);
+}
+
+.logo img {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.navbar nav {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+.navbar nav a {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  transition: color 0.15s ease;
+}
+
+.navbar nav a:hover {
+  color: var(--scarlet);
+}
+
+/* ===================================================== */
+/* Legal content                                          */
+/* ===================================================== */
+
+.legal-page {
+  padding: 72px 0 120px;
+}
+
+.legal-container {
+  max-width: 760px;
+}
+
+.legal-container h1 {
+  font-size: clamp(2rem, 3.6vw, 2.75rem);
+  font-weight: 700;
+}
+
+.legal-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 14px;
+}
+
+.legal-date::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--scarlet);
+  flex-shrink: 0;
+}
+
+.legal-container > p {
+  margin-top: 22px;
+  font-size: 16px;
+  line-height: 1.75;
+  max-width: 66ch;
+}
+
+.legal-container hr {
+  border: none;
+  border-top: 1px solid var(--line);
+  margin: 40px 0;
+}
+
+.legal-container h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.legal-container h2 + p {
+  margin-top: 16px;
+}
+
+.legal-container p + p {
+  margin-top: 14px;
+}
+
+.legal-container p + h2,
+.legal-container ul + h2 {
+  margin-top: 0;
+}
+
+.legal-container ul {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legal-container li {
+  position: relative;
+  padding: 7px 0 7px 24px;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.legal-container li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 17px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--scarlet);
+}
+
+.legal-container strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.legal-container a:not(.logo):not(.footer-logo) {
+  color: var(--scarlet);
+  text-decoration: underline;
+  text-decoration-color: var(--scarlet-light);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.legal-container a:not(.logo):not(.footer-logo):hover {
+  text-decoration-color: var(--scarlet);
+}
+
+/* ===================================================== */
+/* Footer                                                 */
+/* ===================================================== */
+
+footer {
+  background: var(--ink);
+  color: rgba(245, 242, 234, 0.6);
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 56px 24px 40px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--paper);
+}
+
+.footer-logo img {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+}
+
+.footer-left > p {
+  margin-top: 14px;
+  max-width: 34ch;
+  font-size: 14px;
+  color: rgba(245, 242, 234, 0.5);
+}
+
+.footer-links h4 {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(245, 242, 234, 0.4);
+  margin: 0 0 16px;
+}
+
+.footer-links a {
+  display: block;
+  font-size: 14.5px;
+  color: rgba(245, 242, 234, 0.7);
+  padding: 6px 0;
+  transition: color 0.15s ease;
+}
+
+.footer-links a:hover {
+  color: var(--white);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(245, 242, 234, 0.1);
+  padding: 22px 0;
+}
+
+.footer-bottom p {
+  font-size: 13px;
+  color: rgba(245, 242, 234, 0.4);
+  text-align: center;
+}
+
+/* ===================================================== */
+/* Responsive                                             */
+/* ===================================================== */
+
+@media (max-width: 640px) {
+  .legal-page {
+    padding: 48px 0 80px;
+  }
+
+  .navbar nav {
+    gap: 18px;
+  }
 }
