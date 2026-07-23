@@ -16,7 +16,7 @@ async function handleAutocomplete(interaction) {
         .filter(watch => watch.courseIndex.startsWith(focused))
         .splice(0, MAX_CHOICES)
         .map(watch => ({
-            name: `${watch.courseIndex} | ${watch.title} (${watch.courseString}:${watch.section})`,
+            name: `${watch.courseIndex} • ${watch.title} (${watch.courseString}:${watch.section})`,
             value: watch.courseIndex
         }));
     

@@ -100,7 +100,7 @@ function getHelpEmbed(user) {
 
 function getNotifyEmbed(courseInfo, courseIndex) {
     const embed = new EmbedBuilder()
-    .setTitle(`${courseInfo.title} (${courseIndex}) has opened!`)
+    .setTitle(`${courseIndex} • ${courseInfo.title} (${courseInfo.courseString}:${courseInfo.section}) is now open!`)
     .addFields(
         {
             name: "Course Number",
