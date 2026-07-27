@@ -2,7 +2,6 @@ import { storage } from "./storage.js";
 import logo from "../assets/logo.png";
 
 const notif = chrome.notifications;
-const courseIndexMap = await storage.getCourseIndexMap();
 
 const WEBREG_URL = "https://sims.rutgers.edu/webreg/editSchedule.htm?login=cas&semesterSelection=92026&indexList=";
 
@@ -10,31 +9,42 @@ notif.onClosed.addListener(async (notificationId) => {
     await updateBadge();
 });
 
+notif.onClicked.addListener(async (notificationId) => {
+    // currently, notificationId is just the courseIndex, as the only notifs being sent are for course openings
+    const courseIndex = notificationId;
+    await openWebReg(courseIndex);
+})
+
 notif.onButtonClicked.addListener(async (notificationId, buttonIndex) => {
     await updateBadge();
 
-    // currently, notificationId is just the courseIndex, as the only notifs being sent are for course openings
     const courseIndex = notificationId;
 
     if(buttonIndex === 0) {
-        const windowsOpen = (await chrome.windows.getAll()).length;
-        if(windowsOpen === 0) {
-            await chrome.windows.create({
-                url: `${WEBREG_URL}${courseIndex}`
-            });
-        }
-        else {
-            await chrome.tabs.create({
-                url: `${WEBREG_URL}${courseIndex}`
-            });
-        }
+        await openWebReg(courseIndex);
     }
     else {
         await storage.addWatch(courseIndex);
     }
 });
 
+async function openWebReg(courseIndex) {
+    const windowsOpen = (await chrome.windows.getAll()).length;
+    if(windowsOpen === 0) {
+        await chrome.windows.create({
+            url: `${WEBREG_URL}${courseIndex}`
+        });
+    }
+    else {
+        await chrome.tabs.create({
+            url: `${WEBREG_URL}${courseIndex}`
+        });
+    }
+}
+
 async function notifyUser(courseIndex) {
+    const courseIndexMap = await storage.getCourseIndexMap();
+
     await notif.create(courseIndex, {
         type: "basic",
         iconUrl: logo,
@@ -45,7 +55,7 @@ async function notifyUser(courseIndex) {
             { title: "Rewatch 🔍" }
         ]
     });
-
+    
     await updateBadge();
 }
 

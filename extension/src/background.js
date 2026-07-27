@@ -2,31 +2,43 @@ import { getOpenCourses } from "../../src/shared/rutgersApi.js";
 import { storage } from "./storage.js";
 import { notifyUser } from "./notifications.js";
 
-await storage.initializeStorage();
+storage.registerStorageListeners();
 
-chrome.alarms.create("poll", {
-    periodInMinutes: 0.5,
-    persistAcrossSessions: true
+chrome.runtime.onInstalled.addListener(async () => {
+    await storage.initializeStorage();
+
+    await chrome.alarms.create("poll", {
+        periodInMinutes: 0.5,
+        persistAcrossSessions: true
+    });
 });
 
 chrome.alarms.onAlarm.addListener(async alarm => {
     if (alarm.name !== "poll") return;
-
+    
     await pollCourses();
 });
 
 async function pollCourses() {
-    const watches = await storage.getWatches();
-    const openCourses = (await getOpenCourses()).sort();
+    const POLLS = 6, FETCH_INTERVAL = 5000;
 
-    for(const courseIndex of watches) {
-        if(containsIndex(openCourses, courseIndex)) {
-            await notifyUser(courseIndex);
-            await storage.removeWatch(courseIndex);
+    for(let i = 0; i < POLLS; i++) {
+        const watches = await storage.getWatches();
+        const openCourses = (await getOpenCourses()).sort();
+
+        for(const courseIndex of watches) {
+            if(containsIndex(openCourses, courseIndex)) {
+                await notifyUser(courseIndex);
+                await storage.removeWatch(courseIndex);
+            }
         }
-    }
 
-    setTimeout(pollCourses, 5000);
+        if(i < POLLS - 1) await sleep(FETCH_INTERVAL);
+    }
+}
+
+async function sleep(time) {
+    await new Promise(resolve => setTimeout(resolve, time));
 }
 
 function containsIndex(openCourses, courseIndex) {

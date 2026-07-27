@@ -2,6 +2,17 @@ import { getCourseInfo } from "../../src/shared/rutgersApi.js";
 
 const localStorage = chrome.storage.local;
 
+async function registerStorageListeners() {
+    localStorage.onChanged.addListener(async () => {
+        try {
+            await chrome.runtime.sendMessage({ action: "update_dom" });
+        }
+        catch(err) {
+            console.log(`Error sending message: ${err}`);
+        }
+    });
+}
+
 async function initializeStorage() {
     const courses = await getCourseInfo(),
           courseIndexMap = new Map();
@@ -19,15 +30,6 @@ async function initializeStorage() {
         localStorage.set({ courseIndexMap: Object.fromEntries(courseIndexMap) }),
         localStorage.set({ watches: await getWatches() || [] })
     ]);
-
-    localStorage.onChanged.addListener(async () => {
-        try {
-            await chrome.runtime.sendMessage({ action: "update_dom" });
-        }
-        catch(err) {
-            console.log(`Error sending message: ${err}`);
-        }
-    });
 }
 
 async function getCourseIndexMap() {
@@ -57,6 +59,7 @@ async function removeWatch(courseIndex) {
 
 
 export const storage = {
+    registerStorageListeners,
     initializeStorage,
     getCourseIndexMap,
     getWatches,
