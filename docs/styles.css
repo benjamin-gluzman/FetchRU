@@ -1,10 +1,5 @@
 /* =====================================================
    FetchRU — Landing Page Styles
-   Concept: the Rutgers WebReg "status board." Course
-   sections flip from CLOSED to OPEN the way a departure
-   board flips a flight from DELAYED to BOARDING — so the
-   page borrows that split-flap, terminal-readout language:
-   monospace indices, blinking "live" dots, dark boards.
    ===================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -843,11 +838,15 @@ nav a[href^="http"]:hover {
   font-weight: 600;
 }
 
-.install-option p {
+.install-option > p {
   margin-top: 8px;
   margin-bottom: 20px;
   color: rgba(245, 242, 234, 0.62);
   font-size: 14.5px;
+}
+
+.install-option .button-row {
+  margin-bottom: 4px;
 }
 
 .install-option .btn-secondary {
@@ -858,6 +857,18 @@ nav a[href^="http"]:hover {
 
 .install-option .btn-secondary:hover {
   border-color: var(--paper);
+}
+
+/* Secondary tier inside a card, e.g. "Already have your own server?" */
+.install-option h3 ~ h3 {
+  margin-top: 24px;
+  margin-bottom: 10px;
+  padding-top: 20px;
+  border-top: 1px dashed rgba(245, 242, 234, 0.16);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(245, 242, 234, 0.55);
+  text-transform: none;
 }
 
 .github-section {
