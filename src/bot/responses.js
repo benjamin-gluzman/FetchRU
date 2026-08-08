@@ -1,9 +1,10 @@
 import { client } from "../bot/bot.js";
+import { MessageFlags } from "discord.js";
 
-async function safeReply(interaction, options) {
+async function safeReply(interaction, options, ephemeral=false) {
     try {
         if (!interaction.deferred && !interaction.replied) {
-            await interaction.deferReply();
+            await interaction.deferReply({ flags: ephemeral ? MessageFlags.Ephemeral : 0 });
         }
 
         await interaction.editReply(options);

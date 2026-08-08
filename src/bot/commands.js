@@ -77,7 +77,7 @@ async function handleWatch(interaction) {
     if(!database.isValidCourseIndex(courseIndex)) {
         await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.WATCH) ]
-        });
+        }, true);
         return;
     }
 
@@ -85,14 +85,14 @@ async function handleWatch(interaction) {
     if(watches.includes(courseIndex)) {
         await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.DUPLICATE_INDEX) ]
-        });
+        }, true);
         return;
     }
     
     if(watchesUsed >= MAX_WATCHES) {
         await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.NO_MORE_WATCHES) ]
-        });
+        }, true);
         return;
     }
 
@@ -100,7 +100,7 @@ async function handleWatch(interaction) {
 
     await safeReply(interaction, {
         embeds: [ em.getWatchEmbed(interaction.user, courseIndex, watchesUsed + 1) ]
-    });
+    }, true);
 }
 
 async function handleUnwatch(interaction) {
@@ -110,7 +110,7 @@ async function handleUnwatch(interaction) {
     if(!watches.includes(courseIndex)) {
         await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.UNWATCH) ]
-        });
+        }, true);
         return;
     }
 
@@ -118,7 +118,7 @@ async function handleUnwatch(interaction) {
 
     await safeReply(interaction, {
         embeds: [ em.getUnwatchEmbed(interaction.user, courseIndex, watchesUsed - 1) ]
-    });
+    }, true);
 }
 
 async function handleCheck(interaction) {
@@ -128,14 +128,14 @@ async function handleCheck(interaction) {
         embeds: [ em.getCheckEmbed(interaction.user, 
             watches.map(courseIndex => database.getInfoByCourseIndex(courseIndex)), 
             watches.length) ]
-    });
+    }, true);
 }
 
 async function handleClear(interaction) {
     if(database.getWatches(interaction.user.id).length === 0) {
         await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.CLEAR) ]
-        });
+        }, true);
         return;
     }
 
@@ -143,7 +143,7 @@ async function handleClear(interaction) {
 
     await safeReply(interaction, {
         embeds: [ em.getClearEmbed(interaction.user) ]
-    });
+    }, true);
 }
 
 async function handleSearch(interaction) {
@@ -152,7 +152,7 @@ async function handleSearch(interaction) {
     if(!database.isValidCourseIndex(courseIndex)) {
         await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.SEARCH) ]
-        });
+        }, true);
         return;
     }
 
@@ -161,13 +161,13 @@ async function handleSearch(interaction) {
 
     await safeReply(interaction, {
         embeds: [ em.getSearchEmbed(interaction.user, courseInfo, meetingTime) ]
-    });
+    }, true);
 }
 
 async function handleHelp(interaction) {
     await safeReply(interaction, {
         embeds: [ em.getHelpEmbed(interaction.user) ]
-    });
+    }, false);
 }
 
 

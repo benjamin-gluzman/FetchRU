@@ -17,7 +17,7 @@ async function handleRewatch(interaction, fields) {
     if(database.getWatches(interaction.user.id).includes(courseIndex)) {
         await safeReply(interaction, {
             embeds: [ em.getInvalidRequestEmbed(interaction.user, INVALID_REQUESTS.DUPLICATE_INDEX) ]
-        });
+        }, false);
         return;
     }
 
@@ -25,7 +25,7 @@ async function handleRewatch(interaction, fields) {
 
     await safeReply(interaction, {
         embeds: [ em.getRewatchEmbed(interaction.user, courseIndex) ]
-    });
+    }, false);
 }
 
 export { handleInteraction };
