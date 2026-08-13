@@ -100,9 +100,10 @@ Whenever a monitored section opens, Discord and Chrome Extension users are both 
 - PM2
 - Discord.js
 - Webpack
-- Chrome Extension Manifest V3
-- JavaScript (ES Modules)
+- Chrome Extension APIs
 - Oracle Cloud Infrastructure
+- GitHub Actions
+- JavaScript (ES Modules)
 
 ---
 
