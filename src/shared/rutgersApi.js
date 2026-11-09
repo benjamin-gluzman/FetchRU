@@ -10,8 +10,8 @@ const CAMPUSES = {
     NEWARK: "NK"
 };
 
-const YEAR = 2026, TERM = TERMS.FALL;
-const RETRY_TIME = 5000, ABORT_TIME = 30_000;
+const YEAR = 2027, TERM = TERMS.SPRING;
+const RETRY_TIME = 2500, ABORT_TIME = 30_000;
 
 const OPEN_COURSES_URL = (year, term, campus) => 
     `https://classes.rutgers.edu/soc/api/openSections.json?year=${year}&term=${term}&campus=${campus}`;
