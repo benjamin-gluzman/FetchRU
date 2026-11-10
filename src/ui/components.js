@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, TextDisplayBuilder} from "discord.js";
+import { YEAR, TERM } from "../shared/rutgersApi.js";
 
-const WEBREG_URL = "https://sims.rutgers.edu/webreg/editSchedule.htm?login=cas&semesterSelection=92026&indexList="
+const WEBREG_URL = `https://sims.rutgers.edu/webreg/editSchedule.htm?login=cas&semesterSelection=${TERM}${YEAR}&indexList=`
 
 function getNotifyComponent(courseIndex) {
     // CustomId Format: rewatch-<index>

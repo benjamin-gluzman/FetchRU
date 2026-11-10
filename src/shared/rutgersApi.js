@@ -107,3 +107,4 @@ async function getCourseInfo() {
 }
 
 export { getOpenCourses, getCourseInfo };
+export { YEAR, TERM };
