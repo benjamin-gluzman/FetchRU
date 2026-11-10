@@ -1,9 +1,10 @@
+import { TERM, YEAR } from "../../src/shared/rutgersApi.js";
 import { storage } from "./storage.js";
 import logo from "../assets/logo.png";
 
 const notif = chrome.notifications;
 
-const WEBREG_URL = "https://sims.rutgers.edu/webreg/editSchedule.htm?login=cas&semesterSelection=92026&indexList=";
+const WEBREG_URL = `https://sims.rutgers.edu/webreg/editSchedule.htm?login=cas&semesterSelection=${TERM}${YEAR}&indexList=`;
 
 notif.onClosed.addListener(async (notificationId) => {
     await updateBadge();
